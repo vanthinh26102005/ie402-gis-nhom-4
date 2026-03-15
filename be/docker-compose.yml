@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: gis_postgres
+    environment:
+      POSTGRES_USER: gis_user
+      POSTGRES_PASSWORD: gis_password
+      POSTGRES_DB: gis_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
