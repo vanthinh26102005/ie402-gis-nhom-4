@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   postgres:
-    image: postgres:latest
+    image: postgis/postgis:16-3.4
     container_name: gis_postgres
     environment:
       POSTGRES_USER: gis_user
@@ -11,9 +11,20 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: gis_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
     restart: unless-stopped
 
 volumes:
   postgres_data:
+    driver: local
+  redis_data:
     driver: local

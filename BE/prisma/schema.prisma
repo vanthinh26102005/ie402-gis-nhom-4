@@ -1,0 +1,76 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [postgis]
+}
+
+model Province {
+  id        Int      @id @default(autoincrement())
+  name      String
+  nameEn    String?  @map("name_en")
+  geometry  Json     // Store GeoJSON geometry
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  places   Place[]
+  services Service[]
+
+  @@map("provinces")
+}
+
+model Place {
+  id          Int      @id @default(autoincrement())
+  name        String
+  category    String
+  description String?
+  rating      Float    @default(0)
+  featured    Boolean  @default(false)
+  longitude   Float
+  latitude    Float
+  address     String?
+  imageUrl    String?  @map("image_url")
+  provinceId  Int?     @map("province_id")
+  province    Province? @relation(fields: [provinceId], references: [id])
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([category])
+  @@index([rating])
+  @@index([featured])
+  @@index([provinceId])
+  @@map("places")
+}
+
+model Road {
+  id        Int      @id @default(autoincrement())
+  name      String
+  type      String   // highway, primary, secondary, etc.
+  geometry  Json     // Store GeoJSON LineString
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([type])
+  @@map("roads")
+}
+
+model Service {
+  id         Int      @id @default(autoincrement())
+  name       String
+  type       String   // hotel, restaurant, hospital, atm, etc.
+  longitude  Float
+  latitude   Float
+  address    String?
+  provinceId Int?     @map("province_id")
+  province   Province? @relation(fields: [provinceId], references: [id])
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@index([type])
+  @@index([provinceId])
+  @@map("services")
+}
