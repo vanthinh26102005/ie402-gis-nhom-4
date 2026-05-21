@@ -44,7 +44,30 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* Heritage & Horizon Brand Design Tokens */
+  --color-brand-primary: #00355f;
+  --color-brand-primary-container: #0f4c81;
+  --color-brand-on-primary-container: #8ebdf9;
+  --color-brand-secondary: #006a60;
+  --color-brand-secondary-container: #8cf5e4;
+  --color-brand-on-secondary-container: #007166;
+  --color-brand-tertiary: #193b13;
+  --color-brand-tertiary-container: #305228;
+  --color-brand-on-tertiary-container: #9dc48f;
+  --color-brand-background: #f8f9fa;
+  --color-brand-surface: #f8f9fa;
+  --color-brand-surface-lowest: #ffffff;
+  --color-brand-surface-low: #f3f4f5;
+  --color-brand-surface-container: #edeeef;
+  --color-brand-surface-high: #e7e8e9;
+  --color-brand-surface-highest: #e1e3e4;
+  --color-brand-outline: #727780;
+  --color-brand-outline-variant: #c2c7d1;
+  --radius-brand-card: 1.5rem;
+  --animate-spin-slow: spin 10s linear infinite;
 }
+
 
 :root {
   --background: oklch(1 0 0);

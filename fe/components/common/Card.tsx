@@ -5,10 +5,11 @@ export function Card({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       className={cn(
-        "rounded-lg border border-slate-200 bg-white p-6 shadow-sm",
+        "rounded-brand-card border border-brand-outline-variant/30 bg-brand-surface-lowest p-6 shadow-sm",
         className,
       )}
       {...props}
     />
   );
 }
+
