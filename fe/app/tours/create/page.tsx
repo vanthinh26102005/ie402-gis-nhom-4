@@ -1,27 +1,25 @@
-import { Button } from "@/components/common/Button";
-import { Input } from "@/components/common/Input";
-import { PagePlaceholder } from "@/components/common/PagePlaceholder";
+import { Card } from "@/components/common/Card";
+import { CreateTourForm } from "@/components/tours/CreateTourForm";
 import { UserLayout } from "@/components/layout/UserLayout";
 
 export default function CreateTourPage() {
   return (
     <UserLayout>
-      <PagePlaceholder
-        title="Tạo tour du lịch"
-        description="Trang cho phép người dùng chọn nhiều điểm đến và xây dựng hành trình."
-        placeholder="Trang này là trang tạo tour du lịch."
-        suggestions={[
-          "Tạo danh sách điểm đến đã chọn.",
-          "Cho phép sắp xếp thứ tự tham quan.",
-          "Kết nối API TourPlan và TourPlanDetail khi backend có sẵn.",
-        ]}
-      >
-        <div className="grid max-w-xl gap-3">
-          <Input placeholder="Tên tour" />
-          <Input placeholder="Mô tả ngắn" />
-          <Button>Lưu tour nháp</Button>
+      <div className="mx-auto w-full max-w-2xl space-y-6">
+        <div className="space-y-2">
+          <h1 className="text-3xl font-semibold tracking-tight text-slate-950">
+            Tạo tour du lịch
+          </h1>
+          <p className="text-sm leading-6 text-slate-600">
+            Chọn nhiều điểm đến, sắp xếp thứ tự tham quan và lưu hành trình cá
+            nhân.
+          </p>
         </div>
-      </PagePlaceholder>
+
+        <Card className="border-blue-100 bg-gradient-to-br from-white to-blue-50/50">
+          <CreateTourForm />
+        </Card>
+      </div>
     </UserLayout>
   );
 }
