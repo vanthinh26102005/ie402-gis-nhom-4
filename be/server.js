@@ -8,8 +8,7 @@ import logger from "morgan";
 import indexRouter from "./routes/index.js";
 import usersRouter from "./routes/users.js";
 
-// Import client từ db.js
-import client from "./config/db.js";
+dotenv.config({ quiet: true });
 
 const app = express();
 
@@ -18,8 +17,6 @@ app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-
-// Không cần gọi client() nữa vì kết nối đã được thực hiện trong db.js
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
