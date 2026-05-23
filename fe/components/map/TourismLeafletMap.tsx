@@ -17,11 +17,13 @@ import {
 import { RoutePolyline } from "@/components/map/RoutePolyline";
 import type {
   DestinationFeatureProperties,
+} from "@/lib/types/destination";
+import type {
   GeoJsonFeatureCollection,
   GeoJsonLineString,
-  ServiceFeatureProperties,
-} from "@/lib/gis";
-import { lngLatToLatLng } from "@/lib/gis";
+} from "@/lib/types/geojson";
+import type { ServiceFeatureProperties } from "@/lib/types/service";
+import { lngLatToLatLng } from "@/lib/format/gis";
 
 const MAP_CENTER: [number, number] = [16.33, 107.66];
 const MAP_ZOOM = 8;

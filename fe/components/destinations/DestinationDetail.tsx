@@ -3,8 +3,9 @@
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { Clock, MapPin, Star, Ticket } from "lucide-react";
-import type { DestinationDetail as DestinationDetailType } from "@/lib/gis";
-import { fetchDestinationDetail } from "@/lib/gis";
+import { fetchDestinationDetail } from "@/lib/api/destinations";
+import { formatVnd } from "@/lib/format/currency";
+import type { DestinationDetail as DestinationDetailType } from "@/lib/types/destination";
 
 const DestinationMiniMap = dynamic(
   () => import("@/components/destinations/DestinationMiniMap").then((mod) => mod.DestinationMiniMap),
@@ -21,10 +22,6 @@ const DestinationMiniMap = dynamic(
 type DestinationDetailProps = {
   id: string;
 };
-
-function formatPrice(value: number | null) {
-  return value ? `${value.toLocaleString("vi-VN")} đ` : "Miễn phí";
-}
 
 export function DestinationDetail({ id }: DestinationDetailProps) {
   const [destination, setDestination] = useState<DestinationDetailType | null>(null);
@@ -44,11 +41,7 @@ export function DestinationDetail({ id }: DestinationDetailProps) {
         }
       } catch (loadError) {
         if (isMounted) {
-          setError(
-            loadError instanceof Error
-              ? loadError.message
-              : "Không thể tải chi tiết địa điểm.",
-          );
+          setError(loadError instanceof Error ? loadError.message : "Không thể tải chi tiết địa điểm.");
         }
       } finally {
         if (isMounted) {
@@ -126,11 +119,7 @@ export function DestinationDetail({ id }: DestinationDetailProps) {
                 : "Đang cập nhật"
             }
           />
-          <InfoTile
-            icon={Ticket}
-            label="Giá vé"
-            value={formatPrice(destination.ticketPrice)}
-          />
+          <InfoTile icon={Ticket} label="Giá vé" value={formatVnd(destination.ticketPrice)} />
           <InfoTile
             icon={Star}
             label="Đánh giá"
@@ -162,7 +151,7 @@ export function DestinationDetail({ id }: DestinationDetailProps) {
           <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
             <h2 className="text-base font-semibold text-slate-950">Thời tiết demo</h2>
             <p className="mt-2 text-sm text-slate-600">
-              {destination.weather.weatherStatus || "Đang cập nhật"} ·{" "}
+              {destination.weather.weatherStatus || "Đang cập nhật"} -{" "}
               {destination.weather.temperature ?? "N/A"}°C
             </p>
           </div>

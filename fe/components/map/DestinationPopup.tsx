@@ -1,10 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import type {
-  DestinationFeatureProperties,
-  ServiceFeatureProperties,
-} from "@/lib/gis";
+import type { DestinationFeatureProperties } from "@/lib/types/destination";
+import type { ServiceFeatureProperties } from "@/lib/types/service";
 
 type DestinationPopupProps = {
   properties: DestinationFeatureProperties;
