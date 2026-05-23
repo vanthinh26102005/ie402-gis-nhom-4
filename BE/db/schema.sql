@@ -95,6 +95,8 @@ CREATE TABLE users (
   role varchar(20) NOT NULL DEFAULT 'user',
   avatar text,
   birthday date,
+  reset_password_token_hash text,
+  reset_password_expires_at timestamptz,
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now(),
   CONSTRAINT users_role_check CHECK (role IN ('user', 'admin'))
@@ -182,6 +184,7 @@ CREATE INDEX traffic_info_location_geom_gix ON traffic_info USING gist (location
 CREATE INDEX tourist_destinations_province_idx ON tourist_destinations (province_id);
 CREATE INDEX tourist_destinations_category_idx ON tourist_destinations (category_id);
 CREATE INDEX service_facilities_province_type_idx ON service_facilities (province_id, type);
+CREATE INDEX users_reset_password_token_hash_idx ON users (reset_password_token_hash);
 CREATE INDEX reviews_destination_status_idx ON reviews (destination_id, status);
 CREATE INDEX notifications_destination_status_idx ON notifications (destination_id, status);
 CREATE INDEX weather_info_destination_observed_idx ON weather_info (destination_id, observed_at DESC);

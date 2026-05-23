@@ -21,6 +21,15 @@ DB_PORT=5432
 DB_USER=gis_user
 DB_PASSWORD=gis_password
 DB_DATABASE=gis_db
+JWT_SECRET=change-this-long-random-secret
+BCRYPT_SALT_ROUNDS=10
+RESET_PASSWORD_TOKEN_MINUTES=15
+MAIL_FROM=GIS Tourism <no-reply@gis.local>
+# SMTP_HOST=smtp.example.com
+# SMTP_PORT=587
+# SMTP_SECURE=false
+# SMTP_USER=username
+# SMTP_PASSWORD=password
 ```
 
 ## Response Shape
@@ -55,6 +64,9 @@ List endpoints include `meta.total`.
 - `GET /api/health`
 - `POST /api/auth/register`
 - `POST /api/auth/login`
+- `POST /api/auth/forgot-password`
+- `PATCH /api/auth/reset-password/:token`
+- `POST /api/auth/logout`
 - `GET /api/users/me`
 - `GET /api/categories`
 - `GET /api/destinations`
@@ -107,6 +119,173 @@ List endpoints include `meta.total`.
 
 ## Notes
 
-Data is currently mock and in-memory so the frontend can integrate against stable contracts before DB/PostGIS work lands. Replace service implementations with shared query helpers when the database schema is ready.
+Auth uses PostgreSQL, bcrypt password hashing, JWT access tokens, and an HTTP-only `accessToken` cookie. The demo seed users are:
 
-Auth is a mock contract only. Login and register return a user object plus a `mock-token-*` token; no real password hashing, JWT signing, or authorization middleware is implemented yet.
+- `user.demo@gis.local` / `Password123!`
+- `admin.demo@gis.local` / `Password123!`
+
+When SMTP settings are not provided, reset-password email content is written to the backend console for local development.
+
+## Auth Examples
+
+### Register
+
+`POST /api/auth/register`
+
+```json
+{
+  "name": "Nguyen Van A",
+  "email": "a@example.com",
+  "password": "Password123!",
+  "confirmPassword": "Password123!"
+}
+```
+
+Response `201`:
+
+```json
+{
+  "data": {
+    "user": {
+      "id": "uuid",
+      "name": "Nguyen Van A",
+      "email": "a@example.com",
+      "role": "user",
+      "avatar": null,
+      "birthday": null,
+      "createdAt": "2026-05-23T12:00:00.000Z",
+      "updatedAt": "2026-05-23T12:00:00.000Z"
+    },
+    "accessToken": "jwt",
+    "expiresIn": "2h"
+  },
+  "meta": {},
+  "error": null
+}
+```
+
+### Login
+
+`POST /api/auth/login`
+
+```json
+{
+  "email": "a@example.com",
+  "password": "Password123!",
+  "rememberMe": true
+}
+```
+
+Response `200` sets an HTTP-only `accessToken` cookie:
+
+```json
+{
+  "data": {
+    "user": {
+      "id": "uuid",
+      "name": "Nguyen Van A",
+      "email": "a@example.com",
+      "role": "user",
+      "avatar": null,
+      "birthday": null,
+      "createdAt": "2026-05-23T12:00:00.000Z",
+      "updatedAt": "2026-05-23T12:00:00.000Z"
+    },
+    "rememberMe": true,
+    "accessToken": "jwt",
+    "expiresIn": "30d"
+  },
+  "meta": {},
+  "error": null
+}
+```
+
+### Current User
+
+`GET /api/users/me`
+
+Send the cookie automatically from the browser, or use:
+
+```text
+Authorization: Bearer jwt
+```
+
+Response `200`:
+
+```json
+{
+  "data": {
+    "id": "uuid",
+    "name": "Nguyen Van A",
+    "email": "a@example.com",
+    "role": "user",
+    "avatar": null,
+    "birthday": null,
+    "createdAt": "2026-05-23T12:00:00.000Z",
+    "updatedAt": "2026-05-23T12:00:00.000Z"
+  },
+  "meta": {},
+  "error": null
+}
+```
+
+### Forgot Password
+
+`POST /api/auth/forgot-password`
+
+```json
+{
+  "email": "a@example.com"
+}
+```
+
+Response `200`:
+
+```json
+{
+  "data": {
+    "message": "If the email exists, a password reset link has been sent."
+  },
+  "meta": {},
+  "error": null
+}
+```
+
+### Reset Password
+
+`PATCH /api/auth/reset-password/:token`
+
+```json
+{
+  "password": "NewPassword123!",
+  "confirmPassword": "NewPassword123!"
+}
+```
+
+Response `200`:
+
+```json
+{
+  "data": {
+    "message": "Password has been reset successfully."
+  },
+  "meta": {},
+  "error": null
+}
+```
+
+### Logout
+
+`POST /api/auth/logout`
+
+Response `200` clears the auth cookie:
+
+```json
+{
+  "data": {
+    "message": "Logged out successfully."
+  },
+  "meta": {},
+  "error": null
+}
+```

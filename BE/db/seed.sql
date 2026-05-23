@@ -216,7 +216,7 @@ INSERT INTO users (id, full_name, email, password_hash, role, avatar, birthday) 
   'dddddddd-dddd-dddd-dddd-ddddddddddd1',
   'Demo User',
   'user.demo@gis.local',
-  '$2b$10$demo.password.hash.for.local.seed.only',
+  '$2b$10$dyJOKedwOaRBxQ8/XlW6Eu8JTFlsiAYPWyokcvj4gO9m.fDphDKuy',
   'user',
   NULL,
   '2002-01-15'
@@ -225,7 +225,7 @@ INSERT INTO users (id, full_name, email, password_hash, role, avatar, birthday) 
   'dddddddd-dddd-dddd-dddd-ddddddddddd2',
   'Admin Demo',
   'admin.demo@gis.local',
-  '$2b$10$demo.password.hash.for.local.seed.only',
+  '$2b$10$dyJOKedwOaRBxQ8/XlW6Eu8JTFlsiAYPWyokcvj4gO9m.fDphDKuy',
   'admin',
   NULL,
   '2000-09-01'
