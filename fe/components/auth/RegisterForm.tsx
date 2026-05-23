@@ -5,7 +5,7 @@ import { Button } from "@/components/common/Button";
 import { Input } from "@/components/common/Input";
 import { AuthStatusMessage } from "@/components/auth/AuthStatusMessage";
 import { FormField } from "@/components/auth/FormField";
-import { registerUser } from "@/lib/api";
+import { useAuth } from "@/lib/auth/authContext";
 import { cn } from "@/lib/utils";
 import {
   hasFieldErrors,
@@ -26,6 +26,7 @@ const initialValues: RegisterFormValues = {
 };
 
 export function RegisterForm({ onSuccess }: RegisterFormProps) {
+  const { register } = useAuth();
   const [values, setValues] = useState(initialValues);
   const [fieldErrors, setFieldErrors] = useState<
     FieldErrors<keyof RegisterFormValues>
@@ -46,24 +47,25 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
 
     setIsSubmitting(true);
     try {
-      const result = await registerUser({
-        fullName: values.fullName.trim(),
-        email: values.email.trim(),
-        password: values.password,
+      await register(
+        values.fullName.trim(),
+        values.email.trim(),
+        values.password,
+      );
+      setStatus({
+        variant: "success",
+        message: "Đăng ký thành công. Bạn có thể đăng nhập ngay.",
       });
-
-      if (!result.ok) {
-        setStatus({ variant: "error", message: result.message });
-        return;
-      }
-
-      setStatus({ variant: "success", message: result.message });
       setValues(initialValues);
-      onSuccess?.();
-    } catch {
+      setTimeout(() => onSuccess?.(), 500);
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Không thể kết nối máy chủ. Vui lòng thử lại sau.";
       setStatus({
         variant: "error",
-        message: "Không thể kết nối máy chủ. Vui lòng thử lại sau.",
+        message,
       });
     } finally {
       setIsSubmitting(false);
@@ -91,7 +93,11 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
         <AuthStatusMessage variant={status.variant} message={status.message} />
       ) : null}
 
-      <FormField id="register-fullName" label="Họ và tên" error={fieldErrors.fullName}>
+      <FormField
+        id="register-fullName"
+        label="Họ và tên"
+        error={fieldErrors.fullName}
+      >
         <Input
           id="register-fullName"
           type="text"
@@ -101,7 +107,8 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           onChange={(e) => updateField("fullName", e.target.value)}
           aria-invalid={Boolean(fieldErrors.fullName)}
           className={cn(
-            fieldErrors.fullName && "border-red-400 focus:border-red-500 focus:ring-red-100",
+            fieldErrors.fullName &&
+              "border-red-400 focus:border-red-500 focus:ring-red-100",
           )}
         />
       </FormField>
@@ -116,12 +123,17 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           onChange={(e) => updateField("email", e.target.value)}
           aria-invalid={Boolean(fieldErrors.email)}
           className={cn(
-            fieldErrors.email && "border-red-400 focus:border-red-500 focus:ring-red-100",
+            fieldErrors.email &&
+              "border-red-400 focus:border-red-500 focus:ring-red-100",
           )}
         />
       </FormField>
 
-      <FormField id="register-password" label="Mật khẩu" error={fieldErrors.password}>
+      <FormField
+        id="register-password"
+        label="Mật khẩu"
+        error={fieldErrors.password}
+      >
         <Input
           id="register-password"
           type="password"
@@ -131,7 +143,8 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           onChange={(e) => updateField("password", e.target.value)}
           aria-invalid={Boolean(fieldErrors.password)}
           className={cn(
-            fieldErrors.password && "border-red-400 focus:border-red-500 focus:ring-red-100",
+            fieldErrors.password &&
+              "border-red-400 focus:border-red-500 focus:ring-red-100",
           )}
         />
       </FormField>

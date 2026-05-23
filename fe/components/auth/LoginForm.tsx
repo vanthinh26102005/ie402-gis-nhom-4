@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/common/Button";
 import { Input } from "@/components/common/Input";
 import { AuthStatusMessage } from "@/components/auth/AuthStatusMessage";
 import { FormField } from "@/components/auth/FormField";
-import { loginUser } from "@/lib/api";
+import { useAuth } from "@/lib/auth/authContext";
 import { cn } from "@/lib/utils";
 import {
   hasFieldErrors,
@@ -24,15 +25,18 @@ const initialValues: LoginFormValues = {
 };
 
 export function LoginForm({ onSuccess }: LoginFormProps) {
+  const { login } = useAuth();
+  const router = useRouter();
   const [values, setValues] = useState(initialValues);
-  const [fieldErrors, setFieldErrors] = useState<FieldErrors<keyof LoginFormValues>>(
-    {},
-  );
+  const [fieldErrors, setFieldErrors] = useState<
+    FieldErrors<keyof LoginFormValues>
+  >({});
   const [status, setStatus] = useState<{
     variant: "success" | "error";
     message: string;
   } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -44,22 +48,24 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
 
     setIsSubmitting(true);
     try {
-      const result = await loginUser({
-        email: values.email.trim(),
-        password: values.password,
-      });
+      await login(values.email.trim(), values.password, rememberMe);
+      setStatus({ variant: "success", message: "Đăng nhập thành công." });
+      const redirectTo = new URLSearchParams(window.location.search).get("redirect");
+      const nextPath = redirectTo?.startsWith("/") && !redirectTo.startsWith("//") ? redirectTo : "/";
 
-      if (!result.ok) {
-        setStatus({ variant: "error", message: result.message });
-        return;
-      }
-
-      setStatus({ variant: "success", message: result.message });
-      onSuccess?.();
-    } catch {
+      setTimeout(() => {
+        onSuccess?.();
+        router.replace(nextPath);
+        router.refresh();
+      }, 500);
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Không thể kết nối máy chủ. Vui lòng thử lại sau.";
       setStatus({
         variant: "error",
-        message: "Không thể kết nối máy chủ. Vui lòng thử lại sau.",
+        message,
       });
     } finally {
       setIsSubmitting(false);
@@ -97,11 +103,18 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
           onChange={(e) => updateField("email", e.target.value)}
           aria-invalid={Boolean(fieldErrors.email)}
           aria-describedby={fieldErrors.email ? "login-email-error" : undefined}
-          className={cn(fieldErrors.email && "border-red-400 focus:border-red-500 focus:ring-red-100")}
+          className={cn(
+            fieldErrors.email &&
+              "border-red-400 focus:border-red-500 focus:ring-red-100",
+          )}
         />
       </FormField>
 
-      <FormField id="login-password" label="Mật khẩu" error={fieldErrors.password}>
+      <FormField
+        id="login-password"
+        label="Mật khẩu"
+        error={fieldErrors.password}
+      >
         <Input
           id="login-password"
           type="password"
@@ -114,10 +127,24 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
             fieldErrors.password ? "login-password-error" : undefined
           }
           className={cn(
-            fieldErrors.password && "border-red-400 focus:border-red-500 focus:ring-red-100",
+            fieldErrors.password &&
+              "border-red-400 focus:border-red-500 focus:ring-red-100",
           )}
         />
       </FormField>
+
+      <div className="flex items-center">
+        <input
+          id="remember-me"
+          type="checkbox"
+          checked={rememberMe}
+          onChange={(e) => setRememberMe(e.target.checked)}
+          className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+        />
+        <label htmlFor="remember-me" className="ml-2 text-sm text-gray-700">
+          Ghi nhớ tôi
+        </label>
+      </div>
 
       <Button type="submit" className="w-full" disabled={isSubmitting}>
         {isSubmitting ? "Đang đăng nhập..." : "Đăng nhập"}

@@ -24,6 +24,7 @@ export function sendError(res, error) {
 
   return res.status(statusCode).json({
     data: null,
+    message: error.message || "Internal server error",
     meta: {},
     error: {
       message: error.message || "Internal server error",

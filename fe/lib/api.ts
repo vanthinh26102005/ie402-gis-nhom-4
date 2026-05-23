@@ -1,5 +1,5 @@
 export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
+  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001/api";
 
 export type ApiResult<T = void> =
   | { ok: true; data: T; message: string }
@@ -8,65 +8,219 @@ export type ApiResult<T = void> =
 export type LoginPayload = {
   email: string;
   password: string;
+  rememberMe?: boolean;
 };
 
 export type RegisterPayload = {
-  fullName: string;
+  name?: string;
+  fullName?: string;
   email: string;
   password: string;
+  confirmPassword?: string;
 };
 
-type AuthUser = {
+export type AuthUser = {
   id: string;
   email: string;
-  fullName: string;
+  name?: string;
+  fullName?: string;
+  role?: string;
+  avatar?: string;
+  birthday?: string;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
-const MOCK_EXISTING_EMAIL = "exists@example.com";
-const MOCK_INVALID_LOGIN_EMAIL = "wrong@example.com";
+export type AuthResponse = {
+  user: AuthUser;
+  accessToken: string;
+  expiresIn: string;
+  rememberMe?: boolean;
+};
 
-function delay(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
+/** Login API call */
+export async function loginUser(payload: LoginPayload): Promise<ApiResult<AuthResponse>> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        email: payload.email.trim(),
+        password: payload.password,
+        rememberMe: payload.rememberMe || false,
+      }),
+    });
 
-/** Mock login — thay bằng fetch(`${API_BASE_URL}/auth/login`) khi BE sẵn sàng. */
-export async function loginUser(payload: LoginPayload): Promise<ApiResult<AuthUser>> {
-  await delay(600);
+    if (!response.ok) {
+      const errorData = await response.json();
+      return {
+        ok: false,
+        message: errorData.message || "Đăng nhập thất bại.",
+      };
+    }
 
-  if (payload.email.trim().toLowerCase() === MOCK_INVALID_LOGIN_EMAIL) {
-    return { ok: false, message: "Email hoặc mật khẩu không đúng." };
+    const data = await response.json();
+    return {
+      ok: true,
+      message: data.message || "Đăng nhập thành công.",
+      data: data.data,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: "Không thể kết nối máy chủ. Vui lòng thử lại sau.",
+    };
   }
-
-  return {
-    ok: true,
-    message: "Đăng nhập thành công.",
-    data: {
-      id: "mock-user-1",
-      email: payload.email.trim(),
-      fullName: "Người dùng GIS",
-    },
-  };
 }
 
-/** Mock register — thay bằng fetch(`${API_BASE_URL}/auth/register`) khi BE sẵn sàng. */
+/** Register API call */
 export async function registerUser(
   payload: RegisterPayload,
-): Promise<ApiResult<AuthUser>> {
-  await delay(700);
+): Promise<ApiResult<AuthResponse>> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        name: payload.fullName || payload.name,
+        email: payload.email.trim(),
+        password: payload.password,
+        confirmPassword: payload.confirmPassword || payload.password,
+      }),
+    });
 
-  if (payload.email.trim().toLowerCase() === MOCK_EXISTING_EMAIL) {
-    return { ok: false, message: "Email này đã được sử dụng." };
+    if (!response.ok) {
+      const errorData = await response.json();
+      return {
+        ok: false,
+        message: errorData.message || "Đăng ký thất bại.",
+      };
+    }
+
+    const data = await response.json();
+    return {
+      ok: true,
+      message: data.message || "Đăng ký thành công. Bạn có thể đăng nhập ngay.",
+      data: data.data,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: "Không thể kết nối máy chủ. Vui lòng thử lại sau.",
+    };
   }
+}
 
-  return {
-    ok: true,
-    message: "Đăng ký thành công. Bạn có thể đăng nhập ngay.",
-    data: {
-      id: "mock-user-new",
-      email: payload.email.trim(),
-      fullName: payload.fullName.trim(),
-    },
-  };
+/** Logout API call */
+export async function logoutUser(): Promise<ApiResult<void>> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/logout`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        message: "Đăng xuất thất bại.",
+      };
+    }
+
+    return {
+      ok: true,
+      message: "Đã đăng xuất thành công.",
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: "Không thể kết nối máy chủ.",
+    };
+  }
+}
+
+/** Forgot password API call */
+export async function forgotPassword(payload: {
+  email: string;
+}): Promise<ApiResult<void>> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        email: payload.email.trim(),
+      }),
+    });
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        message: "Yêu cầu thất bại.",
+      };
+    }
+
+    const data = await response.json();
+    return {
+      ok: true,
+      message: data.message || "Nếu email tồn tại, bạn sẽ nhận được email đặt lại mật khẩu.",
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: "Không thể kết nối máy chủ.",
+    };
+  }
+}
+
+/** Reset password API call */
+export async function resetPassword(payload: {
+  token: string;
+  password: string;
+  confirmPassword: string;
+}): Promise<ApiResult<void>> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/reset-password/${payload.token}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        password: payload.password,
+        confirmPassword: payload.confirmPassword,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      return {
+        ok: false,
+        message: errorData.message || "Đặt lại mật khẩu thất bại.",
+      };
+    }
+
+    const data = await response.json();
+    return {
+      ok: true,
+      message: data.message || "Mật khẩu đã được đặt lại thành công.",
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: "Không thể kết nối máy chủ.",
+    };
+  }
 }
 
 export type CreateTourPayload = {

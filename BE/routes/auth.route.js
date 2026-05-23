@@ -20,7 +20,7 @@ const registerSchema = [
     email: true,
     maxLength: 150,
   },
-  { name: "password", required: true, type: "string", minLength: 8 },
+  { name: "password", required: true, type: "string", minLength: 6 },
   {
     name: "confirmPassword",
     required: true,
@@ -39,7 +39,7 @@ const forgotPasswordSchema = [
 ];
 
 const resetPasswordSchema = [
-  { name: "password", required: true, type: "string", minLength: 8 },
+  { name: "password", required: true, type: "string", minLength: 6 },
   {
     name: "confirmPassword",
     required: true,
