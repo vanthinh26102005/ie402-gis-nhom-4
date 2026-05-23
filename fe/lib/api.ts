@@ -2,7 +2,7 @@ export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001/api";
 
 export type ApiResult<T = void> =
-  | { ok: true; data: T; message: string }
+  | { ok: true; data?: T; message: string }
   | { ok: false; message: string };
 
 export type LoginPayload = {
@@ -37,6 +37,12 @@ export type AuthResponse = {
   expiresIn: string;
   rememberMe?: boolean;
 };
+
+function delay(ms: number) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
 
 /** Login API call */
 export async function loginUser(payload: LoginPayload): Promise<ApiResult<AuthResponse>> {

@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
+import { LogoutButton } from "@/components/auth/LogoutButton";
 
 export function AdminHeader() {
   return (
@@ -13,10 +16,10 @@ export function AdminHeader() {
             Quản lý dữ liệu WebGIS
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <span className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-800">
             <ShieldCheck className="size-3.5" aria-hidden="true" />
-            Chưa bật xác thực thật
+            Đã bật xác thực
           </span>
           <Link
             href="/"
@@ -24,6 +27,7 @@ export function AdminHeader() {
           >
             Về trang user
           </Link>
+          <LogoutButton />
         </div>
       </div>
     </header>

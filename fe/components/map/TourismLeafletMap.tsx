@@ -1,44 +1,38 @@
 "use client";
 
 import L from "leaflet";
-import { Eye, EyeOff, Layers, MapPin, Route, Settings2 } from "lucide-react";
-import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   MapContainer,
   Marker,
-  Polyline,
   Popup,
   TileLayer,
   ZoomControl,
 } from "react-leaflet";
+import { DestinationPopup, ServicePopup } from "@/components/map/DestinationPopup";
 import {
-  DEFAULT_LAYER_VISIBILITY,
-  MAP_CENTER,
-  MAP_LAYERS,
-  MAP_POINTS,
-  MAP_ZOOM,
-  TOURISM_ROUTE,
-  getLayerPointCount,
+  LayerTogglePanel,
   type MapLayerId,
-  type MapPoint,
-} from "@/lib/map-data";
+} from "@/components/map/LayerTogglePanel";
+import { RoutePolyline } from "@/components/map/RoutePolyline";
+import type {
+  DestinationFeatureProperties,
+  GeoJsonFeatureCollection,
+  GeoJsonLineString,
+  ServiceFeatureProperties,
+} from "@/lib/gis";
+import { lngLatToLatLng } from "@/lib/gis";
 
-const layerIcons = {
-  destinations: MapPin,
-  services: Settings2,
-  route: Route,
-} satisfies Record<MapLayerId, typeof MapPin>;
+const MAP_CENTER: [number, number] = [16.33, 107.66];
+const MAP_ZOOM = 8;
 
-const tourismRouteStyle = {
-  color: "#dc2626",
-  opacity: 0.78,
-  weight: 4,
+const defaultLayerVisibility: Record<MapLayerId, boolean> = {
+  destinations: true,
+  services: true,
+  route: true,
 };
 
-function createMarkerIcon(point: MapPoint) {
-  const color = point.layerId === "destinations" ? "#2563eb" : "#059669";
-
+function createMarkerIcon(color: string) {
   return L.divIcon({
     className: "tourism-map-pin",
     html: `<span style="background:${color}; border-color:white;" aria-hidden="true"></span>`,
@@ -48,10 +42,30 @@ function createMarkerIcon(point: MapPoint) {
   });
 }
 
-export function TourismLeafletMap() {
-  const [visibleLayers, setVisibleLayers] = useState(DEFAULT_LAYER_VISIBILITY);
+const destinationIcon = createMarkerIcon("#2563eb");
+const serviceIcon = createMarkerIcon("#059669");
 
-  const visiblePoints = MAP_POINTS.filter((point) => visibleLayers[point.layerId]);
+type TourismLeafletMapProps = {
+  destinations: GeoJsonFeatureCollection<DestinationFeatureProperties>;
+  services: GeoJsonFeatureCollection<ServiceFeatureProperties>;
+  routeGeometry?: GeoJsonLineString | null;
+};
+
+export function TourismLeafletMap({
+  destinations,
+  services,
+  routeGeometry,
+}: TourismLeafletMapProps) {
+  const [visibleLayers, setVisibleLayers] = useState(defaultLayerVisibility);
+
+  const counts = useMemo(
+    () => ({
+      destinations: destinations.features.length,
+      services: services.features.length,
+      route: routeGeometry?.coordinates.length ?? 0,
+    }),
+    [destinations.features.length, routeGeometry?.coordinates.length, services.features.length],
+  );
 
   function toggleLayer(layerId: MapLayerId) {
     setVisibleLayers((current) => ({
@@ -67,7 +81,7 @@ export function TourismLeafletMap() {
           center={MAP_CENTER}
           zoom={MAP_ZOOM}
           minZoom={7}
-          maxZoom={14}
+          maxZoom={16}
           scrollWheelZoom
           zoomControl={false}
           className="h-full min-h-[520px] w-full"
@@ -78,101 +92,45 @@ export function TourismLeafletMap() {
           />
           <ZoomControl position="bottomright" />
 
-          {visibleLayers.route ? (
-            <Polyline
-              positions={TOURISM_ROUTE}
-              pathOptions={tourismRouteStyle}
-            />
-          ) : null}
+          {visibleLayers.route ? <RoutePolyline geometry={routeGeometry} /> : null}
 
-          {visiblePoints.map((point) => (
-            <Marker
-              key={point.id}
-              position={point.position}
-              icon={createMarkerIcon(point)}
-              title={point.name}
-            >
-              <Popup>
-                <div className="space-y-2">
-                  <div>
-                    <p className="text-sm font-semibold text-slate-950">{point.name}</p>
-                    <p className="text-xs text-slate-600">
-                      {point.category} - {point.province}
-                    </p>
-                  </div>
-                  <p className="text-xs leading-5 text-slate-600">{point.description}</p>
-                  <Link
-                    href={point.href}
-                    className="inline-flex rounded-md bg-blue-700 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-800"
-                  >
-                    Xem chi tiết
-                  </Link>
-                </div>
-              </Popup>
-            </Marker>
-          ))}
+          {visibleLayers.destinations
+            ? destinations.features.map((feature) => (
+                <Marker
+                  key={feature.properties.id}
+                  position={lngLatToLatLng(feature.geometry.coordinates)}
+                  icon={destinationIcon}
+                  title={feature.properties.name}
+                >
+                  <Popup>
+                    <DestinationPopup properties={feature.properties} />
+                  </Popup>
+                </Marker>
+              ))
+            : null}
+
+          {visibleLayers.services
+            ? services.features.map((feature) => (
+                <Marker
+                  key={feature.properties.id}
+                  position={lngLatToLatLng(feature.geometry.coordinates)}
+                  icon={serviceIcon}
+                  title={feature.properties.name}
+                >
+                  <Popup>
+                    <ServicePopup properties={feature.properties} />
+                  </Popup>
+                </Marker>
+              ))
+            : null}
         </MapContainer>
       </div>
 
-      <aside className="border-t border-slate-200 p-4 lg:border-l lg:border-t-0">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <p className="text-xs font-semibold uppercase text-slate-500">Lớp dữ liệu</p>
-            <h2 className="mt-1 text-lg font-semibold text-slate-950">Bản đồ MVP</h2>
-          </div>
-          <Link
-            href="/map/layers"
-            className="inline-flex size-9 items-center justify-center rounded-md border border-slate-200 text-slate-700 hover:bg-slate-50"
-            aria-label="Xem trạng thái lớp dữ liệu"
-          >
-            <Layers className="size-4" aria-hidden="true" />
-          </Link>
-        </div>
-
-        <div className="mt-4 space-y-3">
-          {MAP_LAYERS.map((layer) => {
-            const Icon = layerIcons[layer.id];
-            const isVisible = visibleLayers[layer.id];
-            const ToggleIcon = isVisible ? Eye : EyeOff;
-
-            return (
-              <button
-                key={layer.id}
-                type="button"
-                aria-pressed={isVisible}
-                onClick={() => toggleLayer(layer.id)}
-                className="flex w-full gap-3 rounded-md border border-slate-200 bg-white p-3 text-left transition hover:border-blue-200 hover:bg-blue-50/40"
-              >
-                <span
-                  className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-md text-white"
-                  style={{ backgroundColor: layer.color }}
-                >
-                  <Icon className="size-4" aria-hidden="true" />
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="flex items-center justify-between gap-2">
-                    <span className="text-sm font-semibold text-slate-950">{layer.label}</span>
-                    <ToggleIcon className="size-4 shrink-0 text-slate-500" aria-hidden="true" />
-                  </span>
-                  <span className="mt-1 block text-xs leading-5 text-slate-600">
-                    {layer.description}
-                  </span>
-                  <span className="mt-2 inline-flex rounded-md bg-slate-100 px-2 py-1 text-xs font-medium text-slate-700">
-                    {getLayerPointCount(layer.id)} đối tượng
-                  </span>
-                </span>
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="mt-4 rounded-md border border-slate-200 bg-slate-50 p-3">
-          <p className="text-sm font-semibold text-slate-900">Đang hiển thị</p>
-          <p className="mt-1 text-sm text-slate-600">
-            {visiblePoints.length} marker và {visibleLayers.route ? "1 tuyến kết nối" : "0 tuyến kết nối"}
-          </p>
-        </div>
-      </aside>
+      <LayerTogglePanel
+        visibleLayers={visibleLayers}
+        counts={counts}
+        onToggle={toggleLayer}
+      />
     </section>
   );
 }

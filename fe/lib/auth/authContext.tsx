@@ -15,6 +15,7 @@ import {
   clearAuthToken,
   getUserInfo,
   setUserInfo,
+  clearUserInfo,
 } from "@/lib/auth/tokenStorage";
 
 export type AuthContextType = {
@@ -52,7 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const checkAuth = async () => {
       try {
         const token = getAuthToken();
-        const storedUser = getUserInfo();
+        const storedUser = getUserInfo<AuthUser>();
 
         if (token && storedUser) {
           setUser(storedUser);
@@ -114,6 +115,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error("Logout error:", error);
     }
     clearAuthToken();
+    clearUserInfo();
     setUser(null);
   }, []);
 

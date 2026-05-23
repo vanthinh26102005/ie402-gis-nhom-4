@@ -9,12 +9,10 @@ export async function fetchWithAuth(
 ): Promise<Response> {
   const token = getAuthToken();
 
-  const headers = {
-    ...options?.headers,
-  };
+  const headers = new Headers(options?.headers);
 
   if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
+    headers.set("Authorization", `Bearer ${token}`);
   }
 
   const response = await fetch(url, {

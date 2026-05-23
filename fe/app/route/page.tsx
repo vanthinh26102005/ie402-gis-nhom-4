@@ -1,27 +1,23 @@
-import { Button } from "@/components/common/Button";
-import { Input } from "@/components/common/Input";
-import { PagePlaceholder } from "@/components/common/PagePlaceholder";
 import { UserLayout } from "@/components/layout/UserLayout";
+import { RoutingExperience } from "@/components/routing/RoutingExperience";
 
 export default function RoutePage() {
   return (
     <UserLayout>
-      <PagePlaceholder
-        title="Chỉ đường"
-        description="Trang chọn điểm bắt đầu, điểm đến và hiển thị tuyến đường trên bản đồ."
-        placeholder="Trang này là trang chỉ đường."
-        suggestions={[
-          "Xây dựng form chọn điểm xuất phát và điểm đến.",
-          "Tích hợp thuật toán định tuyến hoặc dịch vụ routing.",
-          "Hiển thị polyline tuyến đường trên bản đồ 2D.",
-        ]}
-      >
-        <div className="grid gap-3 md:grid-cols-[1fr_1fr_160px]">
-          <Input placeholder="Điểm bắt đầu" />
-          <Input placeholder="Điểm đến" />
-          <Button>Tìm đường</Button>
-        </div>
-      </PagePlaceholder>
+      <div className="space-y-6">
+        <section className="max-w-3xl space-y-2">
+          <p className="text-sm font-semibold uppercase text-emerald-700">OSRM routing</p>
+          <h1 className="text-3xl font-semibold text-slate-950">
+            Chỉ đường và lộ trình du lịch
+          </h1>
+          <p className="text-sm leading-6 text-slate-600">
+            Chọn hai địa điểm du lịch, backend sẽ gọi OSRM và trả về tuyến đường
+            để vẽ trực tiếp trên bản đồ Leaflet.
+          </p>
+        </section>
+
+        <RoutingExperience />
+      </div>
     </UserLayout>
   );
 }

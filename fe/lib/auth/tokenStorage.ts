@@ -47,16 +47,16 @@ export function hasAuthToken(): boolean {
 /**
  * Store user info in localStorage (for persistence across page refreshes)
  */
-export function setUserInfo(userInfo: any): void {
+export function setUserInfo(userInfo: unknown): void {
   localStorage.setItem("user_info", JSON.stringify(userInfo));
 }
 
 /**
  * Get stored user info from localStorage
  */
-export function getUserInfo(): any {
+export function getUserInfo<T = unknown>(): T | null {
   const stored = localStorage.getItem("user_info");
-  return stored ? JSON.parse(stored) : null;
+  return stored ? (JSON.parse(stored) as T) : null;
 }
 
 /**
