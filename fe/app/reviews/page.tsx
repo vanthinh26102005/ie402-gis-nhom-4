@@ -1,36 +1,25 @@
-import { Button } from "@/components/common/Button";
-import { Input } from "@/components/common/Input";
-import { PagePlaceholder } from "@/components/common/PagePlaceholder";
-import { Select } from "@/components/common/Select";
+import { Card } from "@/components/common/Card";
+import { SubmitReviewForm } from "@/components/reviews/SubmitReviewForm";
 import { UserLayout } from "@/components/layout/UserLayout";
 
 export default function ReviewsPage() {
   return (
     <UserLayout>
-      <PagePlaceholder
-        title="Đánh giá địa điểm"
-        description="Trang gửi đánh giá và phản hồi cho các điểm du lịch đã trải nghiệm."
-        placeholder="Trang này là trang đánh giá địa điểm."
-        suggestions={[
-          "Tạo form chọn địa điểm, điểm số và nội dung đánh giá.",
-          "Yêu cầu đăng nhập trước khi gửi đánh giá.",
-          "Hiển thị trạng thái chờ kiểm duyệt nếu cần.",
-        ]}
-      >
-        <div className="grid max-w-xl gap-3">
-          <Select
-            defaultValue=""
-            options={[
-              { label: "Chọn điểm du lịch", value: "" },
-              { label: "Đại Nội Huế", value: "hue-citadel" },
-              { label: "Thành cổ Quảng Trị", value: "quang-tri-citadel" },
-            ]}
-          />
-          <Input placeholder="Điểm đánh giá 1-5" />
-          <Input placeholder="Nội dung đánh giá" />
-          <Button>Gửi đánh giá</Button>
+      <div className="mx-auto w-full max-w-xl space-y-6">
+        <div className="space-y-2">
+          <h1 className="text-3xl font-semibold tracking-tight text-slate-950">
+            Đánh giá địa điểm
+          </h1>
+          <p className="text-sm leading-6 text-slate-600">
+            Chọn địa điểm, chấm điểm và gửi phản hồi sau khi trải nghiệm. Đánh
+            giá sẽ được kiểm duyệt trước khi hiển thị công khai.
+          </p>
         </div>
-      </PagePlaceholder>
+
+        <Card className="border-blue-100 bg-gradient-to-br from-white to-blue-50/50">
+          <SubmitReviewForm />
+        </Card>
+      </div>
     </UserLayout>
   );
 }
