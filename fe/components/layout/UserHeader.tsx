@@ -18,7 +18,7 @@ export function UserHeader() {
   });
 
   return (
-    <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 backdrop-blur">
+    <header className="sticky top-0 z-20 border-b border-brand-outline-variant/25 bg-white/95 backdrop-blur">
       <div className="mx-auto flex min-h-16 w-full max-w-7xl flex-col gap-3 px-4 py-3 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
         <Link
           href="/"
@@ -27,7 +27,9 @@ export function UserHeader() {
           <span className="flex size-10 items-center justify-center rounded-md bg-blue-700 text-white">
             <MapPinned className="size-5" aria-hidden="true" />
           </span>
-          <span>{APP_NAME}</span>
+          <span className="text-brand-primary font-bold text-lg">
+            {APP_NAME}
+          </span>
         </Link>
 
         <nav
@@ -38,7 +40,7 @@ export function UserHeader() {
             <Link
               key={route.href}
               href={route.href}
-              className="rounded-md px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-emerald-50 hover:text-emerald-800"
+              className="rounded-xl px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-brand-secondary/10 hover:text-brand-secondary active:scale-95"
             >
               {route.label}
             </Link>

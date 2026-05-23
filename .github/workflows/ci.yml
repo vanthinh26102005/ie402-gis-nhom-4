@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+
+jobs:
+  frontend:
+    name: Frontend CI
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: fe/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: fe
+
+      - name: Run Lint
+        run: npm run lint
+        working-directory: fe
+
+      - name: Run Build
+        run: npm run build
+        working-directory: fe
+
+  backend:
+    name: Backend CI
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: be/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: be
+
+      # Backend currently runs raw Express JS, we run a quick syntax check on server.js
+      - name: Check JS Syntax
+        run: node --check server.js
+        working-directory: be

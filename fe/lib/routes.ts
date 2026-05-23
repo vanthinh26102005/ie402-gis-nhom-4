@@ -47,6 +47,18 @@ export const userNavigationRoutes: RouteItem[] = [
     icon: "tour",
   },
   {
+    label: "Chỉ đường",
+    href: "/route",
+    description: "Tìm và hiển thị lộ trình di chuyển.",
+    icon: "route",
+  },
+  {
+    label: "Thời tiết & Giao thông",
+    href: "/weather-traffic",
+    description: "Xem thông tin thời tiết và giao thông.",
+    icon: "weather",
+  },
+  {
     label: "Đăng nhập",
     href: "/auth/login",
     description: "Đăng nhập tài khoản người dùng.",
