@@ -1,41 +1,28 @@
 import dotenv from "dotenv";
 import express from "express";
-import createError from "http-errors";
-import path from "path";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
 
-import indexRouter from "./routes/index.js";
-import usersRouter from "./routes/users.js";
+import apiRouter from "./routes/index.js";
+import { corsMiddleware } from "./middlewares/cors.js";
+import { errorHandler, notFoundHandler } from "./middlewares/errorHandler.js";
 
-dotenv.config({ quiet: true });
+dotenv.config();
 
 const app = express();
 
-// Middleware setup
 app.use(logger("dev"));
+app.use(corsMiddleware);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use("/", indexRouter);
-app.use("/users", usersRouter);
+app.use("/api", apiRouter);
 
-// catch 404 and forward to error handler
-app.use((req, res, next) => {
-  next(createError(404));
-});
+app.use(notFoundHandler);
+app.use(errorHandler);
 
-// error handler
-app.use((err, req, res, next) => {
-  res.locals.message = err.message;
-  res.locals.error = req.app.get("env") === "development" ? err : {};
-
-  res.status(err.status || 500);
-  res.json({ message: err.message, error: err });
-});
-
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
