@@ -1,37 +1,40 @@
-import { Button } from "@/components/common/Button";
-import { Input } from "@/components/common/Input";
-import { PagePlaceholder } from "@/components/common/PagePlaceholder";
-import { Select } from "@/components/common/Select";
-import { REGION_PROVINCES } from "@/lib/constants";
+import { DestinationForm } from "@/components/admin/DestinationForm";
+import { mockDestinations } from "@/lib/admin-data";
 
-export default function EditDestinationPage() {
-  return (
-    <PagePlaceholder
-      title="Sửa điểm du lịch"
-      description="Trang biểu mẫu cập nhật thông tin một điểm du lịch đã tồn tại."
-      placeholder="Trang này là trang sửa điểm du lịch."
-      suggestions={[
-        "Lấy id từ dynamic route để tải dữ liệu hiện có.",
-        "Tái sử dụng form với trang thêm điểm du lịch.",
-        "Gửi API cập nhật và xử lý trạng thái lưu.",
-      ]}
-    >
-      <div className="grid max-w-2xl gap-3 md:grid-cols-2">
-        <Input placeholder="Tên điểm du lịch" />
-        <Select
-          defaultValue=""
-          options={[
-            { label: "Chọn tỉnh/thành", value: "" },
-            ...REGION_PROVINCES.map((province) => ({
-              label: province,
-              value: province,
-            })),
-          ]}
-        />
-        <Input placeholder="Địa chỉ" />
-        <Input placeholder="Tọa độ" />
-        <Button className="md:col-span-2">Cập nhật điểm du lịch</Button>
+interface EditDestinationPageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default async function EditDestinationPage({ params }: EditDestinationPageProps) {
+  const { id } = await params;
+  const destination = mockDestinations.find((d) => d.id === id);
+
+  if (!destination) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-semibold text-slate-950">Không tìm thấy</h1>
+          <p className="mt-2 text-slate-600">Điểm du lịch không tồn tại.</p>
+        </div>
       </div>
-    </PagePlaceholder>
+    );
+  }
+
+  return (
+    <DestinationForm
+      initialData={{
+        name: destination.name,
+        province: destination.province,
+        category: destination.category,
+        address: destination.address,
+        latitude: destination.latitude.toString(),
+        longitude: destination.longitude.toString(),
+        ticket_price: destination.ticket_price.toString(),
+        open_time: destination.open_time,
+        close_time: destination.close_time,
+        description: destination.description,
+      }}
+      isEditing
+    />
   );
 }

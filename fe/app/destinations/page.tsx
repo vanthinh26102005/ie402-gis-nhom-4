@@ -1,15 +1,5 @@
-"use client";
-
-import { useEffect, useState, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { DestinationList } from "@/components/destinations/DestinationList";
 import { UserLayout } from "@/components/layout/UserLayout";
-import { DestinationCard } from "@/components/destinations/DestinationCard";
-import { DestinationFilterBar } from "@/components/destinations/DestinationFilterBar";
-import { getDestinations } from "@/lib/api";
-import { TouristDestination } from "@/lib/mockData";
-import Link from "next/link";
-import { Compass, AlertCircle, RefreshCw, Navigation, CloudSun } from "lucide-react";
-import { Button } from "@/components/common/Button";
 
 export default function DestinationsPage() {
   return (
@@ -37,7 +27,7 @@ function DestinationsContent() {
   const [keyword, setKeyword] = useState("");
   const [province, setProvince] = useState(initialProvince);
   const [category, setCategory] = useState("");
-  
+
   const [destinations, setDestinations] = useState<TouristDestination[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -50,7 +40,11 @@ function DestinationsContent() {
   }, [initialProvince]);
 
   // Fetch function
-  const fetchDestinations = async (filters?: { keyword?: string; province?: string; category?: string }) => {
+  const fetchDestinations = async (filters?: {
+    keyword?: string;
+    province?: string;
+    category?: string;
+  }) => {
     setLoading(true);
     setError(null);
     try {
@@ -96,19 +90,33 @@ function DestinationsContent() {
             </h1>
             <div className="mt-2 h-1 w-20 bg-brand-secondary rounded-full md:mx-0 mx-auto" />
             <p className="mt-3 text-slate-600 max-w-2xl text-xs md:text-sm font-medium leading-relaxed">
-              Tìm kiếm và lựa chọn các di tích lịch sử, danh lam thắng cảnh, bãi biển tuyệt đẹp và khu vui chơi giải trí hàng đầu tại Quảng Trị, Huế và Đà Nẵng.
+              Tìm kiếm và lựa chọn các di tích lịch sử, danh lam thắng cảnh, bãi
+              biển tuyệt đẹp và khu vui chơi giải trí hàng đầu tại Quảng Trị,
+              Huế và Đà Nẵng.
             </p>
-            
+
             {/* Quick Actions / Link Cards shortcut */}
             <div className="mt-4 flex flex-wrap justify-center md:justify-start gap-3">
-              <Button asChild size="sm" variant="outline" className="rounded-xl text-xs font-bold border-brand-primary/20 text-brand-primary bg-brand-primary/5 hover:bg-brand-primary/10 transition-all cursor-pointer">
+              <Button
+                asChild
+                size="sm"
+                variant="outline"
+                className="rounded-xl text-xs font-bold border-brand-primary/20 text-brand-primary bg-brand-primary/5 hover:bg-brand-primary/10 transition-all cursor-pointer"
+              >
                 <Link href="/route">
-                  <Navigation className="size-3.5 mr-1.5 text-brand-primary" /> Lập lộ trình đi
+                  <Navigation className="size-3.5 mr-1.5 text-brand-primary" />{" "}
+                  Lập lộ trình đi
                 </Link>
               </Button>
-              <Button asChild size="sm" variant="outline" className="rounded-xl text-xs font-bold border-brand-secondary/20 text-brand-secondary bg-brand-secondary/5 hover:bg-brand-secondary/10 transition-all cursor-pointer">
+              <Button
+                asChild
+                size="sm"
+                variant="outline"
+                className="rounded-xl text-xs font-bold border-brand-secondary/20 text-brand-secondary bg-brand-secondary/5 hover:bg-brand-secondary/10 transition-all cursor-pointer"
+              >
                 <Link href="/weather-traffic">
-                  <CloudSun className="size-3.5 mr-1.5 text-brand-secondary" /> Thời tiết & Giao thông
+                  <CloudSun className="size-3.5 mr-1.5 text-brand-secondary" />{" "}
+                  Thời tiết & Giao thông
                 </Link>
               </Button>
             </div>
@@ -130,9 +138,16 @@ function DestinationsContent() {
           {error && (
             <div className="flex flex-col items-center justify-center py-16 bg-white border border-rose-100 rounded-brand-card p-8 text-center max-w-lg mx-auto shadow-sm">
               <AlertCircle className="size-12 text-rose-500 mb-4 animate-bounce" />
-              <h3 className="text-lg font-bold text-slate-800">Đã xảy ra lỗi</h3>
+              <h3 className="text-lg font-bold text-slate-800">
+                Đã xảy ra lỗi
+              </h3>
               <p className="mt-2 text-sm text-slate-500">{error}</p>
-              <Button onClick={() => fetchDestinations({ keyword, province, category })} className="mt-6">
+              <Button
+                onClick={() =>
+                  fetchDestinations({ keyword, province, category })
+                }
+                className="mt-6"
+              >
                 <RefreshCw className="size-4 mr-2" /> Thử lại
               </Button>
             </div>
@@ -142,7 +157,10 @@ function DestinationsContent() {
           {!error && loading && (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="flex flex-col h-[400px] bg-white border border-brand-outline-variant/20 rounded-brand-card overflow-hidden animate-pulse shadow-sm">
+                <div
+                  key={i}
+                  className="flex flex-col h-[400px] bg-white border border-brand-outline-variant/20 rounded-brand-card overflow-hidden animate-pulse shadow-sm"
+                >
                   <div className="h-48 w-full bg-slate-200" />
                   <div className="p-5 flex-1 flex flex-col justify-between">
                     <div>
@@ -164,9 +182,12 @@ function DestinationsContent() {
           {!error && !loading && destinations.length === 0 && (
             <div className="flex flex-col items-center justify-center py-20 bg-brand-surface-lowest border border-brand-outline-variant/30 rounded-brand-card p-8 text-center max-w-md mx-auto shadow-sm">
               <Compass className="size-16 text-brand-primary/30 mb-4 animate-spin-slow" />
-              <h3 className="text-lg font-bold text-slate-800">Không tìm thấy điểm đến</h3>
+              <h3 className="text-lg font-bold text-slate-800">
+                Không tìm thấy điểm đến
+              </h3>
               <p className="mt-2 text-xs text-slate-500 leading-relaxed font-medium">
-                Hãy thử thay đổi từ khóa tìm kiếm hoặc điều chỉnh lại bộ lọc tỉnh thành, loại hình du lịch.
+                Hãy thử thay đổi từ khóa tìm kiếm hoặc điều chỉnh lại bộ lọc
+                tỉnh thành, loại hình du lịch.
               </p>
               <Button onClick={handleReset} className="mt-6">
                 Hiển thị tất cả
@@ -179,7 +200,11 @@ function DestinationsContent() {
             <div>
               <div className="flex justify-between items-center mb-6">
                 <span className="text-xs md:text-sm text-slate-500 font-bold">
-                  Tìm thấy <strong className="text-brand-primary font-extrabold text-sm md:text-base">{destinations.length}</strong> điểm du lịch phù hợp
+                  Tìm thấy{" "}
+                  <strong className="text-brand-primary font-extrabold text-sm md:text-base">
+                    {destinations.length}
+                  </strong>{" "}
+                  điểm du lịch phù hợp
                 </span>
               </div>
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

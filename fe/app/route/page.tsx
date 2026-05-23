@@ -42,7 +42,8 @@ export default function RoutePage() {
 
 function RouteContent() {
   const searchParams = useSearchParams();
-  const queryStart = searchParams.get("start") || searchParams.get("startId") || "";
+  const queryStart =
+    searchParams.get("start") || searchParams.get("startId") || "";
   const queryEnd = searchParams.get("end") || searchParams.get("endId") || "";
 
   const [destinations, setDestinations] = useState<TouristDestination[]>([]);
@@ -154,7 +155,8 @@ function RouteContent() {
               Định Tuyến & Chỉ Đường Thông Minh
             </h1>
             <p className="mt-2 text-slate-600 max-w-2xl text-sm">
-              Chọn điểm đi và điểm đến để mô phỏng lộ trình di chuyển tối ưu nối liền các di tích lịch sử và danh thắng miền Trung Việt Nam.
+              Chọn điểm đi và điểm đến để mô phỏng lộ trình di chuyển tối ưu nối
+              liền các di tích lịch sử và danh thắng miền Trung Việt Nam.
             </p>
           </div>
 
@@ -163,7 +165,8 @@ function RouteContent() {
             <div className="space-y-6 lg:col-span-1">
               <div className="bg-brand-surface-lowest rounded-brand-card p-6 border border-brand-outline-variant/30 shadow-sm space-y-4">
                 <h2 className="text-lg font-bold text-brand-primary flex items-center gap-2">
-                  <Navigation className="size-5 text-brand-primary/80" /> Lập lộ trình đi
+                  <Navigation className="size-5 text-brand-primary/80" /> Lập lộ
+                  trình đi
                 </h2>
 
                 <form onSubmit={handleCalculateRoute} className="space-y-4">
@@ -239,7 +242,8 @@ function RouteContent() {
               {/* Quick Popular Routes Suggestions */}
               <div className="bg-brand-surface-lowest rounded-brand-card p-6 border border-brand-outline-variant/30 shadow-sm space-y-4">
                 <h3 className="text-sm font-bold text-slate-700 flex items-center gap-2">
-                  <Shuffle className="size-4 text-brand-secondary" /> Lộ trình gợi ý phổ biến
+                  <Shuffle className="size-4 text-brand-secondary" /> Lộ trình
+                  gợi ý phổ biến
                 </h3>
 
                 <div className="space-y-2">
@@ -250,8 +254,12 @@ function RouteContent() {
                     className="w-full text-left text-xs p-3 rounded-xl border border-slate-100 hover:bg-slate-50 hover:border-brand-primary/30 transition-all flex items-center justify-between"
                   >
                     <div>
-                      <span className="font-semibold text-slate-800">Cố đô Huế ➔ Đà Nẵng</span>
-                      <p className="text-[10px] text-slate-400 mt-0.5">Huế ➔ Chùa Linh Ứng (96.5 km)</p>
+                      <span className="font-semibold text-slate-800">
+                        Cố đô Huế ➔ Đà Nẵng
+                      </span>
+                      <p className="text-[10px] text-slate-400 mt-0.5">
+                        Huế ➔ Chùa Linh Ứng (96.5 km)
+                      </p>
                     </div>
                     <Compass className="size-4 text-brand-primary/60" />
                   </button>
@@ -263,8 +271,12 @@ function RouteContent() {
                     className="w-full text-left text-xs p-3 rounded-xl border border-slate-100 hover:bg-slate-50 hover:border-brand-primary/30 transition-all flex items-center justify-between"
                   >
                     <div>
-                      <span className="font-semibold text-slate-800">Khám phá Quảng Trị</span>
-                      <p className="text-[10px] text-slate-400 mt-0.5">Thành Cổ ➔ Địa đạo Vịnh Mốc (37.2 km)</p>
+                      <span className="font-semibold text-slate-800">
+                        Khám phá Quảng Trị
+                      </span>
+                      <p className="text-[10px] text-slate-400 mt-0.5">
+                        Thành Cổ ➔ Địa đạo Vịnh Mốc (37.2 km)
+                      </p>
                     </div>
                     <Compass className="size-4 text-brand-primary/60" />
                   </button>
@@ -276,8 +288,12 @@ function RouteContent() {
                     className="w-full text-left text-xs p-3 rounded-xl border border-slate-100 hover:bg-slate-50 hover:border-brand-primary/30 transition-all flex items-center justify-between"
                   >
                     <div>
-                      <span className="font-semibold text-slate-800">Nội đô Đà Nẵng ngoại thành</span>
-                      <p className="text-[10px] text-slate-400 mt-0.5">Sơn Trà ➔ Bà Nà Hills (44.6 km)</p>
+                      <span className="font-semibold text-slate-800">
+                        Nội đô Đà Nẵng ngoại thành
+                      </span>
+                      <p className="text-[10px] text-slate-400 mt-0.5">
+                        Sơn Trà ➔ Bà Nà Hills (44.6 km)
+                      </p>
                     </div>
                     <Compass className="size-4 text-brand-primary/60" />
                   </button>
@@ -290,7 +306,10 @@ function RouteContent() {
               {loading ? (
                 <div className="bg-brand-surface-lowest rounded-brand-card p-10 border border-brand-outline-variant/30 shadow-sm text-center flex flex-col justify-center items-center min-h-[450px] animate-pulse">
                   <RotateCw className="size-10 text-brand-primary animate-spin mb-4" />
-                  <p className="text-slate-500 text-sm">Đang tính toán khoảng cách và tìm các chặng di chuyển tối ưu...</p>
+                  <p className="text-slate-500 text-sm">
+                    Đang tính toán khoảng cách và tìm các chặng di chuyển tối
+                    ưu...
+                  </p>
                 </div>
               ) : route ? (
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
@@ -298,7 +317,8 @@ function RouteContent() {
                   <div className="md:col-span-7 bg-brand-surface-lowest rounded-brand-card p-6 border border-brand-outline-variant/30 shadow-sm flex flex-col justify-between">
                     <div>
                       <h2 className="text-lg font-bold text-brand-primary border-b border-brand-outline-variant/20 pb-3 flex items-center gap-2 mb-4">
-                        <Milestone className="size-5 text-brand-primary/80" /> Chi tiết chặng đi
+                        <Milestone className="size-5 text-brand-primary/80" />{" "}
+                        Chi tiết chặng đi
                       </h2>
 
                       {/* Timeline steps list */}
@@ -314,14 +334,16 @@ function RouteContent() {
                                   isStart
                                     ? "border-emerald-500 scale-125"
                                     : isEnd
-                                    ? "border-brand-primary scale-125"
-                                    : "border-slate-300"
+                                      ? "border-brand-primary scale-125"
+                                      : "border-slate-300"
                                 }`}
                               >
                                 {(isStart || isEnd) && (
                                   <span
                                     className={`size-1.5 rounded-full ${
-                                      isStart ? "bg-emerald-500" : "bg-brand-primary"
+                                      isStart
+                                        ? "bg-emerald-500"
+                                        : "bg-brand-primary"
                                     }`}
                                   />
                                 )}
@@ -354,7 +376,10 @@ function RouteContent() {
                         <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:20px_20px] opacity-25" />
 
                         {/* Route drawing SVG */}
-                        <svg className="w-full h-full relative z-10" viewBox="0 0 200 200">
+                        <svg
+                          className="w-full h-full relative z-10"
+                          viewBox="0 0 200 200"
+                        >
                           {/* Animated dash line */}
                           <path
                             d="M 40,160 Q 100,40 160,160"
@@ -373,17 +398,60 @@ function RouteContent() {
 
                           {/* Start node */}
                           <circle cx="40" cy="160" r="8" fill="#10b981" />
-                          <circle cx="40" cy="160" r="14" fill="#10b981" fillOpacity="0.2" className="animate-ping" style={{ animationDuration: '3s' }} />
-                          <text x="40" y="182" fill="#10b981" fontSize="8" fontWeight="bold" textAnchor="middle">START</text>
+                          <circle
+                            cx="40"
+                            cy="160"
+                            r="14"
+                            fill="#10b981"
+                            fillOpacity="0.2"
+                            className="animate-ping"
+                            style={{ animationDuration: "3s" }}
+                          />
+                          <text
+                            x="40"
+                            y="182"
+                            fill="#10b981"
+                            fontSize="8"
+                            fontWeight="bold"
+                            textAnchor="middle"
+                          >
+                            START
+                          </text>
 
                           {/* End node */}
                           <circle cx="160" cy="160" r="8" fill="#00355f" />
-                          <circle cx="160" cy="160" r="14" fill="#00355f" fillOpacity="0.2" className="animate-ping" style={{ animationDuration: '2.5s' }} />
-                          <text x="160" y="182" fill="#38bdf8" fontSize="8" fontWeight="bold" textAnchor="middle">END</text>
+                          <circle
+                            cx="160"
+                            cy="160"
+                            r="14"
+                            fill="#00355f"
+                            fillOpacity="0.2"
+                            className="animate-ping"
+                            style={{ animationDuration: "2.5s" }}
+                          />
+                          <text
+                            x="160"
+                            y="182"
+                            fill="#38bdf8"
+                            fontSize="8"
+                            fontWeight="bold"
+                            textAnchor="middle"
+                          >
+                            END
+                          </text>
 
                           {/* Midpoint highlight (e.g. Pass or landmark) */}
                           <circle cx="100" cy="100" r="5" fill="#f59e0b" />
-                          <text x="100" y="90" fill="#f59e0b" fontSize="7" fontWeight="semibold" textAnchor="middle">Trạm Kiểm Soát</text>
+                          <text
+                            x="100"
+                            y="90"
+                            fill="#f59e0b"
+                            fontSize="7"
+                            fontWeight="semibold"
+                            textAnchor="middle"
+                          >
+                            Trạm Kiểm Soát
+                          </text>
                         </svg>
 
                         <div className="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md px-2 py-1 rounded border border-white/10 text-[9px] text-slate-300 font-mono z-20">
@@ -396,21 +464,30 @@ function RouteContent() {
                     <div className="space-y-3 mt-4 pt-3 border-t border-slate-100">
                       <div className="flex justify-between items-center text-xs">
                         <span className="text-slate-500 font-medium flex items-center gap-1">
-                          <Milestone className="size-3.5 text-brand-primary" /> Tổng cự ly:
+                          <Milestone className="size-3.5 text-brand-primary" />{" "}
+                          Tổng cự ly:
                         </span>
-                        <strong className="text-slate-800 text-sm font-extrabold">{route.total_distance} km</strong>
+                        <strong className="text-slate-800 text-sm font-extrabold">
+                          {route.total_distance} km
+                        </strong>
                       </div>
                       <div className="flex justify-between items-center text-xs">
                         <span className="text-slate-500 font-medium flex items-center gap-1">
-                          <Clock className="size-3.5 text-brand-primary" /> Thời gian đi:
+                          <Clock className="size-3.5 text-brand-primary" /> Thời
+                          gian đi:
                         </span>
-                        <strong className="text-slate-800 text-sm font-extrabold">{route.estimated_duration} phút</strong>
+                        <strong className="text-slate-800 text-sm font-extrabold">
+                          {route.estimated_duration} phút
+                        </strong>
                       </div>
                       <div className="flex justify-between items-center text-xs">
                         <span className="text-slate-500 font-medium flex items-center gap-1">
-                          <AlertTriangle className="size-3.5 text-amber-500" /> Lưu lượng tuyến:
+                          <AlertTriangle className="size-3.5 text-amber-500" />{" "}
+                          Lưu lượng tuyến:
                         </span>
-                        <span className="text-slate-600 font-semibold text-right max-w-[140px] line-clamp-1">{route.traffic_status}</span>
+                        <span className="text-slate-600 font-semibold text-right max-w-[140px] line-clamp-1">
+                          {route.traffic_status}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -419,27 +496,43 @@ function RouteContent() {
                 /* Initial welcome empty board */
                 <div className="bg-brand-surface-lowest rounded-brand-card p-10 border border-brand-outline-variant/30 shadow-sm text-center flex flex-col justify-center items-center min-h-[450px]">
                   <Compass className="size-16 text-brand-primary/30 mb-4 animate-spin-slow" />
-                  <h3 className="text-lg font-bold text-slate-800">Chưa có thông tin lộ trình</h3>
+                  <h3 className="text-lg font-bold text-slate-800">
+                    Chưa có thông tin lộ trình
+                  </h3>
                   <p className="mt-2 text-sm text-slate-500 max-w-sm">
-                    Vui lòng chọn Điểm xuất phát và Điểm kết thúc ở bảng bên trái hoặc chọn nhanh các Lộ trình gợi ý để hiển thị thông số chi tiết hành trình.
+                    Vui lòng chọn Điểm xuất phát và Điểm kết thúc ở bảng bên
+                    trái hoặc chọn nhanh các Lộ trình gợi ý để hiển thị thông số
+                    chi tiết hành trình.
                   </p>
-                  
+
                   {/* Showcase details */}
                   <div className="grid grid-cols-3 gap-6 max-w-md mt-10 pt-8 border-t border-slate-100 text-slate-400">
                     <div className="text-center space-y-1">
                       <TrendingUp className="size-6 text-brand-primary/40 mx-auto" />
-                      <h4 className="text-[11px] font-bold text-slate-600">Định tuyến tối ưu</h4>
-                      <p className="text-[9px] text-slate-400">Tiết kiệm nhiên liệu</p>
+                      <h4 className="text-[11px] font-bold text-slate-600">
+                        Định tuyến tối ưu
+                      </h4>
+                      <p className="text-[9px] text-slate-400">
+                        Tiết kiệm nhiên liệu
+                      </p>
                     </div>
                     <div className="text-center space-y-1">
                       <Clock className="size-6 text-brand-primary/40 mx-auto" />
-                      <h4 className="text-[11px] font-bold text-slate-600">Giờ chính xác</h4>
-                      <p className="text-[9px] text-slate-400">Mô phỏng thời tiết thực</p>
+                      <h4 className="text-[11px] font-bold text-slate-600">
+                        Giờ chính xác
+                      </h4>
+                      <p className="text-[9px] text-slate-400">
+                        Mô phỏng thời tiết thực
+                      </p>
                     </div>
                     <div className="text-center space-y-1">
                       <Heart className="size-6 text-brand-primary/40 mx-auto" />
-                      <h4 className="text-[11px] font-bold text-slate-600">Không quảng cáo</h4>
-                      <p className="text-[9px] text-slate-400">Dữ liệu an toàn 100%</p>
+                      <h4 className="text-[11px] font-bold text-slate-600">
+                        Không quảng cáo
+                      </h4>
+                      <p className="text-[9px] text-slate-400">
+                        Dữ liệu an toàn 100%
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -451,4 +544,3 @@ function RouteContent() {
     </UserLayout>
   );
 }
-

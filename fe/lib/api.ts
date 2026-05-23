@@ -1,201 +1,305 @@
-import {
-  MOCK_DESTINATIONS,
-  MOCK_REVIEWS,
-  MOCK_WEATHER,
-  MOCK_TRAFFIC,
-  MOCK_TRAFFIC_ALERTS,
-  TouristDestination,
-  Review,
-  WeatherInfo,
-  TrafficInfo,
-  RouteSummary,
-} from "./mockData";
+export const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001/api";
 
-// Simulate network latency (200ms - 500ms)
-const delay = (ms: number = 300) => new Promise((resolve) => setTimeout(resolve, ms));
+export type ApiResult<T = void> =
+  | { ok: true; data?: T; message: string }
+  | { ok: false; message: string };
 
-export async function getDestinations(filters?: {
-  keyword?: string;
-  province?: string;
-  category?: string;
-}): Promise<TouristDestination[]> {
-  await delay(400);
-  let results = [...MOCK_DESTINATIONS];
+export type LoginPayload = {
+  email: string;
+  password: string;
+  rememberMe?: boolean;
+};
 
-  if (filters) {
-    const { keyword, province, category } = filters;
+export type RegisterPayload = {
+  name?: string;
+  fullName?: string;
+  email: string;
+  password: string;
+  confirmPassword?: string;
+};
 
-    if (keyword && keyword.trim() !== "") {
-      const cleanKeyword = keyword.toLowerCase().trim();
-      results = results.filter(
-        (d) =>
-          d.name.toLowerCase().includes(cleanKeyword) ||
-          d.description.toLowerCase().includes(cleanKeyword) ||
-          d.address.toLowerCase().includes(cleanKeyword)
-      );
+export type AuthUser = {
+  id: string;
+  email: string;
+  name?: string;
+  fullName?: string;
+  role?: string;
+  avatar?: string;
+  birthday?: string;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type AuthResponse = {
+  user: AuthUser;
+  accessToken: string;
+  expiresIn: string;
+  rememberMe?: boolean;
+};
+
+function delay(ms: number) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+/** Login API call */
+export async function loginUser(payload: LoginPayload): Promise<ApiResult<AuthResponse>> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        email: payload.email.trim(),
+        password: payload.password,
+        rememberMe: payload.rememberMe || false,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      return {
+        ok: false,
+        message: errorData.message || "Đăng nhập thất bại.",
+      };
     }
 
-    if (province && province !== "") {
-      results = results.filter((d) => d.province_id === province);
+    const data = await response.json();
+    return {
+      ok: true,
+      message: data.message || "Đăng nhập thành công.",
+      data: data.data,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: "Không thể kết nối máy chủ. Vui lòng thử lại sau.",
+    };
+  }
+}
+
+/** Register API call */
+export async function registerUser(
+  payload: RegisterPayload,
+): Promise<ApiResult<AuthResponse>> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        name: payload.fullName || payload.name,
+        email: payload.email.trim(),
+        password: payload.password,
+        confirmPassword: payload.confirmPassword || payload.password,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      return {
+        ok: false,
+        message: errorData.message || "Đăng ký thất bại.",
+      };
     }
 
-    if (category && category !== "") {
-      results = results.filter((d) => d.category_id === category);
+    const data = await response.json();
+    return {
+      ok: true,
+      message: data.message || "Đăng ký thành công. Bạn có thể đăng nhập ngay.",
+      data: data.data,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: "Không thể kết nối máy chủ. Vui lòng thử lại sau.",
+    };
+  }
+}
+
+/** Logout API call */
+export async function logoutUser(): Promise<ApiResult<void>> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/logout`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        message: "Đăng xuất thất bại.",
+      };
     }
+
+    return {
+      ok: true,
+      message: "Đã đăng xuất thành công.",
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: "Không thể kết nối máy chủ.",
+    };
   }
-
-  return results;
 }
 
-export async function getDestinationById(id: string): Promise<TouristDestination | null> {
-  await delay(250);
-  const dest = MOCK_DESTINATIONS.find((d) => d.destination_id === id);
-  return dest || null;
-}
+/** Forgot password API call */
+export async function forgotPassword(payload: {
+  email: string;
+}): Promise<ApiResult<void>> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        email: payload.email.trim(),
+      }),
+    });
 
-export async function getReviews(destinationId: string): Promise<Review[]> {
-  await delay(300);
-  return MOCK_REVIEWS.filter((r) => r.destination_id === destinationId);
-}
+    if (!response.ok) {
+      return {
+        ok: false,
+        message: "Yêu cầu thất bại.",
+      };
+    }
 
-// Global in-memory reviews to persist additions during page lifetime
-const localReviews = [...MOCK_REVIEWS];
-
-export async function addReview(
-  destinationId: string,
-  review: { user_name: string; content: string; score: number }
-): Promise<Review> {
-  await delay(400);
-  const newReview: Review = {
-    review_id: `rev-local-${Date.now()}`,
-    destination_id: destinationId,
-    user_name: review.user_name || "Khách ẩn danh",
-    content: review.content,
-    score: review.score,
-    created_at: new Date().toISOString(),
-  };
-
-  localReviews.unshift(newReview);
-
-  // Recalculate average rating of the destination
-  const dest = MOCK_DESTINATIONS.find((d) => d.destination_id === destinationId);
-  if (dest) {
-    const reviewsForDest = localReviews.filter((r) => r.destination_id === destinationId);
-    const sum = reviewsForDest.reduce((acc, curr) => acc + curr.score, 0);
-    dest.rating = Math.round((sum / reviewsForDest.length) * 10) / 10;
+    const data = await response.json();
+    return {
+      ok: true,
+      message: data.message || "Nếu email tồn tại, bạn sẽ nhận được email đặt lại mật khẩu.",
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: "Không thể kết nối máy chủ.",
+    };
   }
-
-  return newReview;
 }
 
-// Allow getting reviews including locally added ones
-export async function getReviewsWithLocal(destinationId: string): Promise<Review[]> {
-  await delay(200);
-  return localReviews.filter((r) => r.destination_id === destinationId);
-}
+/** Reset password API call */
+export async function resetPassword(payload: {
+  token: string;
+  password: string;
+  confirmPassword: string;
+}): Promise<ApiResult<void>> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/reset-password/${payload.token}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        password: payload.password,
+        confirmPassword: payload.confirmPassword,
+      }),
+    });
 
-export async function getWeather(destinationId: string): Promise<WeatherInfo | null> {
-  await delay(200);
-  const weather = MOCK_WEATHER.find((w) => w.destination_id === destinationId);
-  if (weather) return weather;
+    if (!response.ok) {
+      const errorData = await response.json();
+      return {
+        ok: false,
+        message: errorData.message || "Đặt lại mật khẩu thất bại.",
+      };
+    }
 
-  // Fallback to province weather
-  const dest = MOCK_DESTINATIONS.find((d) => d.destination_id === destinationId);
-  if (dest) {
-    const provWeather = MOCK_WEATHER.find((w) => w.province === dest.province_id);
-    if (provWeather) return provWeather;
+    const data = await response.json();
+    return {
+      ok: true,
+      message: data.message || "Mật khẩu đã được đặt lại thành công.",
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: "Không thể kết nối máy chủ.",
+    };
   }
-
-  return null;
 }
 
-export async function getTraffic(destinationId: string): Promise<TrafficInfo | null> {
-  await delay(200);
-  const traffic = MOCK_TRAFFIC.find((t) => t.destination_id === destinationId);
-  if (traffic) return traffic;
+export type CreateTourPayload = {
+  name: string;
+  description: string;
+  destinationIds: string[];
+};
+
+export type CreatedTour = {
+  id: string;
+  name: string;
+  description: string;
+  destinationIds: string[];
+};
+
+export type SubmitReviewPayload = {
+  destinationId: string;
+  rating: number;
+  content: string;
+};
+
+export type SubmittedReview = {
+  id: string;
+  destinationId: string;
+  rating: number;
+  content: string;
+  status: "pending" | "approved";
+};
+
+/** Mock tạo tour — thay bằng fetch TourPlan khi BE sẵn sàng. */
+export async function createTour(
+  payload: CreateTourPayload,
+): Promise<ApiResult<CreatedTour>> {
+  await delay(700);
+
+  if (payload.name.trim().toLowerCase() === "tour loi") {
+    return { ok: false, message: "Không thể lưu tour. Vui lòng thử tên khác." };
+  }
 
   return {
-    traffic_id: "t-default",
-    congestion_level: "Thông thoáng",
-    status: "Bình thường",
-    description: "Không ghi nhận ùn tắc hay sự cố quanh điểm du lịch này.",
-    observed_at: new Date().toISOString(),
+    ok: true,
+    message: "Đã lưu tour nháp thành công.",
+    data: {
+      id: `tour-${Date.now()}`,
+      name: payload.name.trim(),
+      description: payload.description.trim(),
+      destinationIds: payload.destinationIds,
+    },
   };
 }
 
-export async function getRoute(startId: string, endId: string): Promise<RouteSummary | null> {
-  await delay(500);
-  const startDest = MOCK_DESTINATIONS.find((d) => d.destination_id === startId);
-  const endDest = MOCK_DESTINATIONS.find((d) => d.destination_id === endId);
+/** Mock gửi đánh giá — thay bằng fetch reviews API khi BE sẵn sàng. */
+export async function submitReview(
+  payload: SubmitReviewPayload,
+): Promise<ApiResult<SubmittedReview>> {
+  await delay(600);
 
-  if (!startDest || !endDest) return null;
-
-  // Calculate distance using simple Euclidean formula mapped to km
-  const dx = (startDest.location_geom.lng - endDest.location_geom.lng) * 111 * Math.cos((startDest.location_geom.lat * Math.PI) / 180);
-  const dy = (startDest.location_geom.lat - endDest.location_geom.lat) * 111;
-  const distance = Math.round(Math.sqrt(dx * dx + dy * dy) * 10) / 10;
-
-  // Estimate duration at an average of 50 km/h + 5 mins overhead
-  const duration = Math.round((distance / 50) * 60 + 5);
-
-  // Determine traffic on route
-  let trafficStatus = "Giao thông ổn định, lộ trình thông thoáng.";
-  const hasSlowSegment = MOCK_TRAFFIC.some(
-    (t) =>
-      t.congestion_level !== "Thông thoáng" &&
-      (t.destination_id === startId || t.destination_id === endId || t.route_name?.includes("Hải Vân"))
-  );
-  if (hasSlowSegment) {
-    trafficStatus = "Ghi nhận có đoạn di chuyển chậm trên tuyến (Đèo Hải Vân hoặc khu nội thành).";
+  if (payload.content.trim().toLowerCase().includes("spam")) {
+    return {
+      ok: false,
+      message: "Nội dung đánh giá không hợp lệ. Vui lòng chỉnh sửa và gửi lại.",
+    };
   }
-
-  // Steps generator
-  const steps: string[] = [
-    `Xuất phát tại ${startDest.name} (${startDest.address}).`,
-    `Đi về hướng Đông Nam theo tuyến đường chính nối ra quốc lộ liên tỉnh.`,
-  ];
-
-  if (startDest.province_id !== endDest.province_id) {
-    steps.push(
-      `Di chuyển dọc theo Quốc lộ 1A qua ranh giới hành chính giữa ${startDest.province_id} và ${endDest.province_id}.`
-    );
-    if (
-      (startDest.province_id === "Huế" && endDest.province_id === "Đà Nẵng") ||
-      (startDest.province_id === "Đà Nẵng" && endDest.province_id === "Huế")
-    ) {
-      steps.push(
-        "Lựa chọn di chuyển qua Hầm đường bộ Hải Vân để tối ưu thời gian hoặc đi đường Đèo Hải Vân để ngắm cảnh."
-      );
-    }
-  } else {
-    steps.push(`Tiếp tục di chuyển trên các tuyến đường thuộc địa phận tỉnh/thành ${startDest.province_id}.`);
-  }
-
-  steps.push(`Rẽ vào đường tiếp cận của điểm đến mục tiêu.`);
-  steps.push(`Đến nơi tại ${endDest.name} (${endDest.address}).`);
 
   return {
-    start_destination_name: startDest.name,
-    end_destination_name: endDest.name,
-    total_distance: distance,
-    estimated_duration: duration,
-    traffic_status: trafficStatus,
-    steps,
+    ok: true,
+    message: "Đã gửi đánh giá. Đang chờ kiểm duyệt.",
+    data: {
+      id: `review-${Date.now()}`,
+      destinationId: payload.destinationId,
+      rating: payload.rating,
+      content: payload.content.trim(),
+      status: "pending",
+    },
   };
 }
-
-export async function getAllWeather(): Promise<WeatherInfo[]> {
-  await delay(200);
-  return MOCK_WEATHER;
-}
-
-export async function getAllTraffic(): Promise<TrafficInfo[]> {
-  await delay(200);
-  return MOCK_TRAFFIC;
-}
-
-export async function getTrafficAlerts(): Promise<typeof MOCK_TRAFFIC_ALERTS> {
-  await delay(150);
-  return MOCK_TRAFFIC_ALERTS;
-}
-

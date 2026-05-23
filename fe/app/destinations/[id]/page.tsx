@@ -11,13 +11,13 @@ import {
   getWeather,
   getTraffic,
 } from "@/lib/api";
-import { TouristDestination, Review, WeatherInfo, TrafficInfo } from "@/lib/mockData";
 import {
-  Star,
-  ArrowLeft,
-  AlertTriangle,
-  Info,
-} from "lucide-react";
+  TouristDestination,
+  Review,
+  WeatherInfo,
+  TrafficInfo,
+} from "@/lib/mockData";
+import { Star, ArrowLeft, AlertTriangle, Info } from "lucide-react";
 import { DestinationInfoPanel } from "@/components/destinations/DestinationInfoPanel";
 import { DestinationWeatherWidget } from "@/components/destinations/DestinationWeatherWidget";
 import { DestinationTrafficWidget } from "@/components/destinations/DestinationTrafficWidget";
@@ -29,7 +29,9 @@ export default function DestinationDetailPage() {
   const router = useRouter();
   const id = params.id as string;
 
-  const [destination, setDestination] = useState<TouristDestination | null>(null);
+  const [destination, setDestination] = useState<TouristDestination | null>(
+    null,
+  );
   const [reviews, setReviews] = useState<Review[]>([]);
   const [weather, setWeather] = useState<WeatherInfo | null>(null);
   const [traffic, setTraffic] = useState<TrafficInfo | null>(null);
@@ -75,7 +77,11 @@ export default function DestinationDetailPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
-  const handleReviewSubmit = async (userName: string, rating: number, content: string) => {
+  const handleReviewSubmit = async (
+    userName: string,
+    rating: number,
+    content: string,
+  ) => {
     await addReview(id, {
       user_name: userName,
       content: content,
@@ -125,7 +131,9 @@ export default function DestinationDetailPage() {
             <div className="size-16 bg-rose-50 rounded-full flex items-center justify-center mx-auto mb-4">
               <AlertTriangle className="size-8 text-rose-500" />
             </div>
-            <h3 className="text-xl font-bold text-slate-800">Không tìm thấy địa điểm</h3>
+            <h3 className="text-xl font-bold text-slate-800">
+              Không tìm thấy địa điểm
+            </h3>
             <p className="mt-2 text-sm text-slate-500">
               {error || "Địa điểm bạn tìm kiếm không tồn tại hoặc đã bị gỡ bỏ."}
             </p>
@@ -183,8 +191,12 @@ export default function DestinationDetailPage() {
               {/* Rating block */}
               <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md rounded-2xl px-4 py-2 self-start md:self-auto border border-white/20">
                 <Star className="size-5 fill-amber-400 text-amber-400" />
-                <span className="text-xl font-bold text-white">{destination.rating.toFixed(1)}</span>
-                <span className="text-xs text-slate-300 font-semibold">({reviews.length} đánh giá)</span>
+                <span className="text-xl font-bold text-white">
+                  {destination.rating.toFixed(1)}
+                </span>
+                <span className="text-xs text-slate-300 font-semibold">
+                  ({reviews.length} đánh giá)
+                </span>
               </div>
             </div>
           </div>
@@ -196,7 +208,8 @@ export default function DestinationDetailPage() {
               {/* Introduction Card */}
               <div className="bg-brand-surface-lowest rounded-brand-card p-6 md:p-8 border border-brand-outline-variant/30 shadow-sm">
                 <h2 className="text-xl font-bold text-brand-primary border-b border-brand-outline-variant/20 pb-3 flex items-center gap-2">
-                  <Info className="size-5 text-brand-primary" /> Giới thiệu chung
+                  <Info className="size-5 text-brand-primary" /> Giới thiệu
+                  chung
                 </h2>
                 <p className="mt-4 text-slate-700 leading-relaxed text-xs md:text-sm font-medium whitespace-pre-line">
                   {destination.description}
