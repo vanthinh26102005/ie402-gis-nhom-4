@@ -2,8 +2,8 @@
 
 import { useEffect } from "react";
 import { Polyline, useMap } from "react-leaflet";
-import type { GeoJsonLineString } from "@/lib/gis";
-import { lineStringToLatLngs } from "@/lib/gis";
+import { lineStringToLatLngs } from "@/lib/format/gis";
+import type { GeoJsonLineString } from "@/lib/types/geojson";
 
 const routeStyle = {
   color: "#dc2626",

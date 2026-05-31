@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { MessageSquare, Star, Send } from "lucide-react";
-import { Review } from "@/lib/mockData";
+import type { Review } from "@/lib/types/review";
 import { Input } from "@/components/common/Input";
 import { Button } from "@/components/common/Button";
 

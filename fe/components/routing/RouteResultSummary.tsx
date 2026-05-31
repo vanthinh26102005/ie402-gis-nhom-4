@@ -1,6 +1,6 @@
 import { Navigation, Timer } from "lucide-react";
-import type { RouteResult } from "@/lib/gis";
-import { formatDistance, formatDuration } from "@/lib/gis";
+import { formatDistance, formatDuration } from "@/lib/format/duration";
+import type { RouteResult } from "@/lib/types/routing";
 
 type RouteResultSummaryProps = {
   route: RouteResult;
