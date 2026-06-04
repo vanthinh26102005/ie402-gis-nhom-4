@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import { query } from "../config/db.js";
-import { unauthorized } from "../utils/apiError.js";
+import { forbidden, unauthorized } from "../utils/apiError.js";
 import { toPublicUser } from "../services/authService.js";
 
 function getToken(req) {
@@ -46,5 +46,13 @@ export async function authenticate(req, res, next) {
 
     return next(error);
   }
+}
+
+export function requireAdmin(req, res, next) {
+  if (req.user?.role !== "admin") {
+    return next(forbidden("Admin privileges are required"));
+  }
+
+  return next();
 }
 

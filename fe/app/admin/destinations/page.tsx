@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { Plus, Search, Edit, MapPinned } from "lucide-react";
 import { Button } from "@/components/common/Button";
@@ -10,32 +10,41 @@ import { Card } from "@/components/common/Card";
 import { DataTable, Column, Action } from "@/components/admin/DataTable";
 import { StatusBadge, CategoryBadge } from "@/components/admin/StatusBadge";
 import { EmptyState } from "@/components/admin/EmptyState";
-import { mockDestinations, type TouristDestination } from "@/lib/admin-data";
+import { getAdminDestinations, type AdminDestination } from "@/lib/api/admin";
 import { REGION_PROVINCES } from "@/lib/constants";
 
 export default function AdminDestinationsPage() {
   const [search, setSearch] = useState("");
   const [province, setProvince] = useState("");
   const [category, setCategory] = useState("");
+  const [destinations, setDestinations] = useState<AdminDestination[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const categories = useMemo(() => {
-    const cats = [...new Set(mockDestinations.map((d) => d.category))];
-    return cats.map((c) => ({ label: c, value: c }));
+  useEffect(() => {
+    getAdminDestinations()
+      .then(setDestinations)
+      .catch(() => setDestinations([]))
+      .finally(() => setIsLoading(false));
   }, []);
 
+  const categories = useMemo(() => {
+    const cats = [...new Set(destinations.map((d) => d.categoryName).filter((value): value is string => Boolean(value)))];
+    return cats.map((c) => ({ label: c, value: c }));
+  }, [destinations]);
+
   const filteredData = useMemo(() => {
-    return mockDestinations.filter((dest) => {
+    return destinations.filter((dest) => {
       const matchesSearch =
         !search ||
         dest.name.toLowerCase().includes(search.toLowerCase()) ||
-        dest.address.toLowerCase().includes(search.toLowerCase());
-      const matchesProvince = !province || dest.province === province;
-      const matchesCategory = !category || dest.category === category;
+        (dest.address || "").toLowerCase().includes(search.toLowerCase());
+      const matchesProvince = !province || dest.provinceName === province;
+      const matchesCategory = !category || dest.categoryName === category;
       return matchesSearch && matchesProvince && matchesCategory;
     });
-  }, [search, province, category]);
+  }, [destinations, search, province, category]);
 
-  const columns: Column<TouristDestination>[] = [
+  const columns: Column<AdminDestination>[] = [
     {
       key: "name",
       header: "Tên điểm du lịch",
@@ -48,33 +57,33 @@ export default function AdminDestinationsPage() {
       ),
     },
     {
-      key: "province",
+      key: "provinceName",
       header: "Tỉnh/Thành",
       width: "120px",
     },
     {
-      key: "category",
+      key: "categoryName",
       header: "Loại hình",
       width: "140px",
-      render: (row) => <CategoryBadge label={row.category} />,
+      render: (row) => <CategoryBadge label={row.categoryName || "Khác"} />,
     },
     {
-      key: "ticket_price",
+      key: "ticketPrice",
       header: "Giá vé",
       width: "100px",
       render: (row) => (
         <span className="text-slate-700">
-          {row.ticket_price === 0 ? "Miễn phí" : `${row.ticket_price.toLocaleString()}đ`}
+          {row.ticketPrice === 0 ? "Miễn phí" : `${Number(row.ticketPrice || 0).toLocaleString()}đ`}
         </span>
       ),
     },
     {
-      key: "open_time",
+      key: "updatedAt",
       header: "Giờ mở cửa",
       width: "120px",
       render: (row) => (
         <span className="text-slate-600">
-          {row.open_time} - {row.close_time}
+          {row.updatedAt ? new Date(row.updatedAt).toLocaleDateString("vi-VN") : "-"}
         </span>
       ),
     },
@@ -83,18 +92,12 @@ export default function AdminDestinationsPage() {
       header: "Trạng thái",
       width: "110px",
       render: (row) => {
-        const statusMap = {
-          active: { label: "Hoạt động", type: "success" as const },
-          inactive: { label: "Tạm dừng", type: "error" as const },
-          pending: { label: "Chờ duyệt", type: "warning" as const },
-        };
-        const status = statusMap[row.status];
-        return <StatusBadge status={status.type} label={status.label} />;
+        return <StatusBadge status="success" label="Hoạt động" />;
       },
     },
   ];
 
-  const actions: Action<TouristDestination>[] = [
+  const actions: Action<AdminDestination>[] = [
     {
       label: "Sửa",
       icon: Edit,
@@ -169,6 +172,7 @@ export default function AdminDestinationsPage() {
           actions={actions}
           keyExtractor={(row) => row.id}
           emptyMessage="Không có điểm du lịch nào"
+          loading={isLoading}
         />
       )}
     </div>

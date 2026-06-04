@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Search, Eye, MapPinned, MessageSquare } from "lucide-react";
 import { Input } from "@/components/common/Input";
 import { Select } from "@/components/common/Select";
@@ -8,10 +8,11 @@ import { Card } from "@/components/common/Card";
 import { DataTable, Column, Action } from "@/components/admin/DataTable";
 import { StatusBadge, RatingBadge } from "@/components/admin/StatusBadge";
 import { EmptyState } from "@/components/admin/EmptyState";
-import { mockReviews, type Review } from "@/lib/admin-data";
+import { getAdminReviews, type AdminReview } from "@/lib/api/admin";
 
 const statusLabels = {
   approved: { label: "Đã duyệt", type: "success" as const },
+  published: { label: "Đã duyệt", type: "success" as const },
   pending: { label: "Chờ duyệt", type: "warning" as const },
   hidden: { label: "Đã ẩn", type: "pending" as const },
   rejected: { label: "Từ chối", type: "error" as const },
@@ -20,30 +21,39 @@ const statusLabels = {
 export default function AdminReviewsPage() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
+  const [reviews, setReviews] = useState<AdminReview[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const pendingCount = mockReviews.filter((r) => r.status === "pending").length;
+  useEffect(() => {
+    getAdminReviews()
+      .then(setReviews)
+      .catch(() => setReviews([]))
+      .finally(() => setIsLoading(false));
+  }, []);
+
+  const pendingCount = reviews.filter((r) => r.status === "pending").length;
 
   const filteredData = useMemo(() => {
-    return mockReviews.filter((review) => {
+    return reviews.filter((review) => {
       const matchesSearch =
         !search ||
-        review.user_name.toLowerCase().includes(search.toLowerCase()) ||
-        review.destination_name.toLowerCase().includes(search.toLowerCase()) ||
-        review.content.toLowerCase().includes(search.toLowerCase());
+        review.userName.toLowerCase().includes(search.toLowerCase()) ||
+        review.destinationName.toLowerCase().includes(search.toLowerCase()) ||
+        (review.content || "").toLowerCase().includes(search.toLowerCase());
       const matchesStatus = !status || review.status === status;
       return matchesSearch && matchesStatus;
     });
-  }, [search, status]);
+  }, [reviews, search, status]);
 
-  const columns: Column<Review>[] = [
+  const columns: Column<AdminReview>[] = [
     {
       key: "user",
       header: "Người đánh giá",
       width: "160px",
       render: (row) => (
         <div>
-          <p className="font-medium text-slate-900">{row.user_name}</p>
-          <p className="mt-0.5 text-xs text-slate-500">ID: {row.user_id}</p>
+          <p className="font-medium text-slate-900">{row.userName}</p>
+          <p className="mt-0.5 text-xs text-slate-500">ID: {row.id}</p>
         </div>
       ),
     },
@@ -54,7 +64,7 @@ export default function AdminReviewsPage() {
       render: (row) => (
         <div className="flex items-center gap-1.5">
           <MapPinned className="size-3.5 text-slate-400" aria-hidden="true" />
-          <span className="text-slate-700">{row.destination_name}</span>
+          <span className="text-slate-700">{row.destinationName}</span>
         </div>
       ),
     },
@@ -62,7 +72,7 @@ export default function AdminReviewsPage() {
       key: "rating",
       header: "Điểm",
       width: "80px",
-      render: (row) => <RatingBadge score={row.rating} />,
+      render: (row) => <RatingBadge score={row.score} />,
     },
     {
       key: "content",
@@ -81,18 +91,18 @@ export default function AdminReviewsPage() {
       },
     },
     {
-      key: "created_at",
+      key: "updatedAt",
       header: "Ngày",
       width: "100px",
       render: (row) => (
         <span className="text-slate-500">
-          {new Date(row.created_at).toLocaleDateString("vi-VN")}
+          {row.updatedAt ? new Date(row.updatedAt).toLocaleDateString("vi-VN") : "-"}
         </span>
       ),
     },
   ];
 
-  const actions: Action<Review>[] = [
+  const actions: Action<AdminReview>[] = [
     {
       label: "Kiểm duyệt",
       icon: Eye,
@@ -136,7 +146,7 @@ export default function AdminReviewsPage() {
             options={[
               { label: "Tất cả trạng thái", value: "" },
               { label: "Chờ duyệt", value: "pending" },
-              { label: "Đã duyệt", value: "approved" },
+              { label: "Đã duyệt", value: "published" },
               { label: "Đã ẩn", value: "hidden" },
               { label: "Từ chối", value: "rejected" },
             ]}
@@ -161,6 +171,7 @@ export default function AdminReviewsPage() {
           actions={actions}
           keyExtractor={(row) => row.id}
           emptyMessage="Không có đánh giá nào"
+          loading={isLoading}
         />
       )}
     </div>

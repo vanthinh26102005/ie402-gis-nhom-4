@@ -1,26 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Plus, Search, Edit, Trash2, FolderTree } from "lucide-react";
 import { Button } from "@/components/common/Button";
 import { Input } from "@/components/common/Input";
 import { Card } from "@/components/common/Card";
 import { DataTable, Column, Action } from "@/components/admin/DataTable";
 import { EmptyState } from "@/components/admin/EmptyState";
-import { mockCategories, type DestinationCategory } from "@/lib/admin-data";
+import { getAdminCategories, type AdminCategory } from "@/lib/api/admin";
 
 export default function AdminCategoriesPage() {
   const [search, setSearch] = useState("");
+  const [categories, setCategories] = useState<AdminCategory[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const filteredData = mockCategories.filter((cat) => {
+  useEffect(() => {
+    getAdminCategories()
+      .then(setCategories)
+      .catch(() => setCategories([]))
+      .finally(() => setIsLoading(false));
+  }, []);
+
+  const filteredData = categories.filter((cat) => {
     if (!search) return true;
     return (
       cat.name.toLowerCase().includes(search.toLowerCase()) ||
-      cat.description.toLowerCase().includes(search.toLowerCase())
+      (cat.description || "").toLowerCase().includes(search.toLowerCase())
     );
   });
 
-  const columns: Column<DestinationCategory>[] = [
+  const columns: Column<AdminCategory>[] = [
     {
       key: "name",
       header: "Tên loại hình",
@@ -29,11 +38,11 @@ export default function AdminCategoriesPage() {
         <div className="flex items-center gap-3">
           <div
             className="size-8 rounded-lg"
-            style={{ backgroundColor: row.color ? `${row.color}20` : "#f3f4f5" }}
+            style={{ backgroundColor: "#f3f4f5" }}
           >
             <div
               className="flex size-full items-center justify-center rounded-lg text-xs font-bold"
-              style={{ color: row.color || "#6b7280" }}
+              style={{ color: "#6b7280" }}
             >
               {row.name.charAt(0)}
             </div>
@@ -42,7 +51,7 @@ export default function AdminCategoriesPage() {
             <p className="font-medium text-slate-900">{row.name}</p>
             <div
               className="mt-0.5 h-1.5 w-12 rounded-full"
-              style={{ backgroundColor: row.color || "#e5e7eb" }}
+              style={{ backgroundColor: "#e5e7eb" }}
             />
           </div>
         </div>
@@ -54,28 +63,28 @@ export default function AdminCategoriesPage() {
       render: (row) => <p className="text-slate-600">{row.description}</p>,
     },
     {
-      key: "destinations_count",
+      key: "destinationsCount",
       header: "Số điểm",
       width: "100px",
       render: (row) => (
         <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700">
-          {row.destinations_count}
+          {row.destinationsCount}
         </span>
       ),
     },
     {
-      key: "updated_at",
+      key: "updatedAt",
       header: "Cập nhật",
       width: "130px",
       render: (row) => (
         <span className="text-slate-500">
-          {new Date(row.updated_at).toLocaleDateString("vi-VN")}
+          {row.updatedAt ? new Date(row.updatedAt).toLocaleDateString("vi-VN") : "-"}
         </span>
       ),
     },
   ];
 
-  const actions: Action<DestinationCategory>[] = [
+  const actions: Action<AdminCategory>[] = [
     {
       label: "Sửa",
       icon: Edit,
@@ -137,6 +146,7 @@ export default function AdminCategoriesPage() {
           actions={actions}
           keyExtractor={(row) => row.id}
           emptyMessage="Không có loại hình nào"
+          loading={isLoading}
         />
       )}
     </div>

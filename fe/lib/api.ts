@@ -1,5 +1,15 @@
 export { API_BASE_URL, fetchApi } from "@/lib/api/client";
 export type { ApiEnvelope, ApiResult } from "@/lib/api/envelope";
+export {
+  getAdminDashboardStats,
+  getAdminCategories,
+  getAdminDestinationMix,
+  getAdminDestinations,
+  getAdminReviews,
+  getAdminRouteDemand,
+  getAdminServices,
+  moderateAdminReview,
+} from "@/lib/api/admin";
 
 export {
   forgotPassword,
