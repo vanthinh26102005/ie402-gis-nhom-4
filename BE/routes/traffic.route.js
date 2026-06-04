@@ -1,12 +1,10 @@
 import express from "express";
+import { listAlerts, listTraffic } from "../controllers/weatherTrafficController.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { createResourceController } from "../controllers/resourceController.js";
-import { trafficService } from "../services/domainServices.js";
 
 const router = express.Router();
 
-const traffic = createResourceController(trafficService);
-
-router.get("/traffic", asyncHandler(traffic.list));
+router.get("/traffic", asyncHandler(listTraffic));
+router.get("/traffic/alerts", asyncHandler(listAlerts));
 
 export default router;

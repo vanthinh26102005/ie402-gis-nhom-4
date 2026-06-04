@@ -1,12 +1,9 @@
 import express from "express";
+import { listWeather } from "../controllers/weatherTrafficController.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { createResourceController } from "../controllers/resourceController.js";
-import { weatherService } from "../services/domainServices.js";
 
 const router = express.Router();
 
-const weather = createResourceController(weatherService);
-
-router.get("/weather", asyncHandler(weather.list));
+router.get("/weather", asyncHandler(listWeather));
 
 export default router;

@@ -1,87 +1,48 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { MapView } from "@/components/map/MapView";
 import { RouteResultSummary } from "@/components/routing/RouteResultSummary";
 import { RouteSearchPanel } from "@/components/routing/RouteSearchPanel";
-import type { DestinationSummary, RouteResult } from "@/lib/gis";
-import { fetchDestinations, requestDirections } from "@/lib/gis";
+import { useDestinations } from "@/lib/hooks/useDestinations";
+import { useRouteDirections } from "@/lib/hooks/useRouteDirections";
 
-export function RoutingExperience() {
-  const [destinations, setDestinations] = useState<DestinationSummary[]>([]);
-  const [startId, setStartId] = useState("");
-  const [endId, setEndId] = useState("");
-  const [route, setRoute] = useState<RouteResult | null>(null);
-  const [isLoadingDestinations, setIsLoadingDestinations] = useState(true);
-  const [isRouting, setIsRouting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+type RoutingExperienceProps = {
+  initialEndId?: string;
+  initialStartId?: string;
+};
+
+export function RoutingExperience({
+  initialEndId = "",
+  initialStartId = "",
+}: RoutingExperienceProps) {
+  const { destinations, error: destinationsError, isLoading } = useDestinations();
+  const routing = useRouteDirections(initialStartId, initialEndId);
 
   useEffect(() => {
-    let isMounted = true;
-
-    async function loadDestinations() {
-      try {
-        setIsLoadingDestinations(true);
-        setError(null);
-        const items = await fetchDestinations();
-        if (isMounted) {
-          setDestinations(items);
-          setStartId(items[0]?.id ?? "");
-          setEndId(items[1]?.id ?? "");
-        }
-      } catch (loadError) {
-        if (isMounted) {
-          setError(
-            loadError instanceof Error
-              ? loadError.message
-              : "Không thể tải danh sách địa điểm.",
-          );
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoadingDestinations(false);
-        }
-      }
-    }
-
-    loadDestinations();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  async function handleRouteSearch() {
-    if (!startId || !endId || startId === endId) {
+    if (routing.startId || destinations.length === 0) {
       return;
     }
 
-    try {
-      setIsRouting(true);
-      setError(null);
-      const routeResult = await requestDirections(startId, endId);
-      setRoute(routeResult);
-    } catch (routeError) {
-      setRoute(null);
-      setError(
-        routeError instanceof Error
-          ? routeError.message
-          : "Không thể tìm đường với OSRM.",
-      );
-    } finally {
-      setIsRouting(false);
-    }
+    routing.setStartId(initialStartId || destinations[0]?.id || "");
+    routing.setEndId(initialEndId || destinations[1]?.id || "");
+  }, [destinations, initialEndId, initialStartId, routing]);
+
+  async function handleRouteSearch() {
+    await routing.calculateRoute();
   }
+
+  const error = destinationsError || routing.error;
 
   return (
     <div className="space-y-5">
       <RouteSearchPanel
         destinations={destinations}
-        startId={startId}
-        endId={endId}
-        isLoading={isLoadingDestinations || isRouting}
-        onStartChange={setStartId}
-        onEndChange={setEndId}
+        startId={routing.startId}
+        endId={routing.endId}
+        isLoading={isLoading || routing.isRouting}
+        onStartChange={routing.setStartId}
+        onEndChange={routing.setEndId}
         onSubmit={handleRouteSearch}
       />
 
@@ -91,15 +52,15 @@ export function RoutingExperience() {
         </div>
       ) : null}
 
-      {isRouting ? (
+      {routing.isRouting ? (
         <div className="rounded-lg border border-slate-200 bg-white p-4 text-sm text-slate-600">
           Đang gọi OSRM và tính tuyến đường...
         </div>
       ) : null}
 
-      {route ? <RouteResultSummary route={route} /> : null}
+      {routing.route ? <RouteResultSummary route={routing.route} /> : null}
 
-      <MapView routeGeometry={route?.geometry ?? null} />
+      <MapView routeGeometry={routing.route?.geometry ?? null} />
     </div>
   );
 }

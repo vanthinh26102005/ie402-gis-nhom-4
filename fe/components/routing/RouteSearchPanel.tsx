@@ -3,7 +3,7 @@
 import { Route } from "lucide-react";
 import { Button } from "@/components/common/Button";
 import { Select } from "@/components/common/Select";
-import type { DestinationSummary } from "@/lib/gis";
+import type { DestinationSummary } from "@/lib/types/destination";
 
 type RouteSearchPanelProps = {
   destinations: DestinationSummary[];

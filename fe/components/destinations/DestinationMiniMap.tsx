@@ -2,7 +2,7 @@
 
 import L from "leaflet";
 import { MapContainer, Marker, TileLayer, ZoomControl } from "react-leaflet";
-import type { Coordinate } from "@/lib/gis";
+import type { Coordinate } from "@/lib/types/geojson";
 
 const markerIcon = L.divIcon({
   className: "tourism-map-pin",

@@ -1,52 +1,16 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
 import { Input } from "@/components/common/Input";
 import { Select } from "@/components/common/Select";
 import { DestinationSummaryCard } from "@/components/destinations/DestinationSummaryCard";
-import type { DestinationSummary } from "@/lib/gis";
-import { fetchDestinations } from "@/lib/gis";
+import { useDestinations } from "@/lib/hooks/useDestinations";
 
 export function DestinationList() {
-  const [destinations, setDestinations] = useState<DestinationSummary[]>([]);
   const [query, setQuery] = useState("");
   const [provinceCode, setProvinceCode] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    async function loadDestinations() {
-      try {
-        setIsLoading(true);
-        setError(null);
-        const items = await fetchDestinations();
-        if (isMounted) {
-          setDestinations(items);
-        }
-      } catch (loadError) {
-        if (isMounted) {
-          setError(
-            loadError instanceof Error
-              ? loadError.message
-              : "Không thể tải danh sách địa điểm.",
-          );
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    loadDestinations();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  const { destinations, error, isLoading } = useDestinations();
 
   const provinceOptions = useMemo(() => {
     const provinces = new Map<string, string>();
@@ -75,9 +39,7 @@ export function DestinationList() {
             .filter(Boolean)
             .some((value) => String(value).toLowerCase().includes(keyword))
         : true;
-      const matchesProvince = provinceCode
-        ? destination.province.code === provinceCode
-        : true;
+      const matchesProvince = provinceCode ? destination.province.code === provinceCode : true;
 
       return matchesKeyword && matchesProvince;
     });

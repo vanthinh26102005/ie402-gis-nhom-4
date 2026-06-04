@@ -1,6 +1,7 @@
 import { MapPin, Star } from "lucide-react";
 import Link from "next/link";
-import type { DestinationSummary } from "@/lib/gis";
+import { formatVnd } from "@/lib/format/currency";
+import type { DestinationSummary } from "@/lib/types/destination";
 
 type DestinationSummaryCardProps = {
   destination: DestinationSummary;
@@ -35,7 +36,7 @@ export function DestinationSummaryCard({ destination }: DestinationSummaryCardPr
           </span>
         ) : null}
         <span className="rounded-md bg-slate-100 px-2 py-1 text-slate-700">
-          {destination.ticketPrice ? `${destination.ticketPrice.toLocaleString("vi-VN")} đ` : "Miễn phí"}
+          {formatVnd(destination.ticketPrice)}
         </span>
       </div>
     </Link>

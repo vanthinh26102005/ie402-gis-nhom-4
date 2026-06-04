@@ -1,111 +1,73 @@
 import Link from "next/link";
-import { TouristDestination } from "@/lib/mockData";
-import { MapPin, Clock, Ticket, Star, ArrowRight } from "lucide-react";
+import { ArrowRight, Clock, MapPin, Star, Ticket } from "lucide-react";
+import { formatVnd } from "@/lib/format/currency";
+import type { DestinationSummary } from "@/lib/types/destination";
 
-interface DestinationCardProps {
-  destination: TouristDestination;
-}
+type DestinationCardProps = {
+  destination: DestinationSummary;
+};
 
 export function DestinationCard({ destination }: DestinationCardProps) {
-  const {
-    destination_id,
-    name,
-    description,
-    address,
-    open_time,
-    close_time,
-    ticket_price,
-    image_url,
-    rating,
-    province_id,
-    category_id,
-  } = destination;
-
-  // Format price
-  const formatPrice = (price: number) => {
-    if (price === 0) return "Miễn phí";
-    return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(price);
-  };
-
-  // Get category badge color class based on theme rules
-  const getCategoryClass = (cat: string) => {
-    switch (cat) {
-      case "Di sản":
-        return "bg-brand-primary/10 text-brand-primary border-brand-primary/20";
-      case "Sinh thái":
-        return "bg-brand-tertiary/10 text-brand-tertiary border-brand-tertiary/20";
-      case "Du lịch biển":
-        return "bg-brand-secondary/10 text-brand-on-secondary-container border-brand-secondary/20";
-      default:
-        return "bg-slate-100 text-slate-800 border-slate-200";
-    }
-  };
-
   return (
-    <div
-      className="relative flex flex-col h-full bg-brand-surface-lowest border border-brand-outline-variant/35 rounded-brand-card shadow-sm hover:shadow-lg hover:shadow-brand-primary/5 hover:-translate-y-1 transition-all duration-300 overflow-hidden group cursor-pointer"
-    >
-      {/* Thumbnail image */}
+    <div className="group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-brand-card border border-brand-outline-variant/35 bg-brand-surface-lowest shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-brand-primary/5">
       <div className="relative h-48 w-full overflow-hidden bg-slate-100">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={image_url}
-          alt={name}
-          className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
-        />
-        {/* Badges overlay */}
-        <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 z-20">
-          <span className="px-2.5 py-0.5 text-xs font-bold rounded-full bg-white text-slate-800 shadow-sm border border-slate-100">
-            {province_id}
+        {destination.imageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={destination.imageUrl}
+            alt={destination.name}
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        ) : null}
+        <div className="absolute left-3 top-3 z-20 flex flex-wrap gap-1.5">
+          <span className="rounded-full border border-slate-100 bg-white px-2.5 py-0.5 text-xs font-bold text-slate-800 shadow-sm">
+            {destination.province.name}
           </span>
-          <span className={`px-2.5 py-0.5 text-xs font-bold rounded-full border ${getCategoryClass(category_id)}`}>
-            {category_id}
-          </span>
+          {destination.category ? (
+            <span className="rounded-full border border-brand-primary/20 bg-brand-primary/10 px-2.5 py-0.5 text-xs font-bold text-brand-primary">
+              {destination.category.name}
+            </span>
+          ) : null}
         </div>
-        {/* Rating overlay */}
-        <div className="absolute bottom-3 right-3 flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white text-brand-primary shadow-sm text-xs font-extrabold border border-slate-100 z-20">
+        <div className="absolute bottom-3 right-3 z-20 flex items-center gap-1 rounded-full border border-slate-100 bg-white px-2.5 py-0.5 text-xs font-extrabold text-brand-primary shadow-sm">
           <Star className="size-3.5 fill-amber-400 text-amber-400" />
-          <span>{rating.toFixed(1)}</span>
+          <span>{destination.rating?.toFixed(1) ?? "N/A"}</span>
         </div>
       </div>
 
-      {/* Card body */}
-      <div className="flex flex-col flex-1 p-5">
-        <h3 className="text-lg font-bold text-brand-primary group-hover:text-brand-primary-container transition-colors line-clamp-1">
-          {name}
+      <div className="flex flex-1 flex-col p-5">
+        <h3 className="line-clamp-1 text-lg font-bold text-brand-primary transition-colors group-hover:text-brand-primary-container">
+          {destination.name}
         </h3>
-        <p className="mt-2 text-xs text-slate-500 line-clamp-2 flex-1 font-medium leading-relaxed">
-          {description}
+        <p className="mt-2 line-clamp-2 flex-1 text-xs font-medium leading-relaxed text-slate-500">
+          {destination.description || "Chưa có mô tả cho địa điểm này."}
         </p>
 
-        {/* Metadatas */}
         <div className="mt-4 space-y-2 border-t border-brand-outline-variant/20 pt-3">
-          <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
+          <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
             <MapPin className="size-3.5 shrink-0 text-brand-primary/70" />
-            <span className="line-clamp-1">{address}</span>
+            <span className="line-clamp-1">{destination.address || destination.province.name}</span>
           </div>
-          <div className="flex justify-between items-center text-xs text-slate-500 font-medium">
+          <div className="flex items-center justify-between text-xs font-medium text-slate-500">
             <div className="flex items-center gap-1.5">
               <Clock className="size-3.5 text-brand-primary/70" />
-              <span>{open_time} - {close_time}</span>
+              <span>Đang cập nhật</span>
             </div>
             <div className="flex items-center gap-1 font-bold text-brand-primary">
               <Ticket className="size-3.5 text-brand-primary/70" />
-              <span>{formatPrice(ticket_price)}</span>
+              <span>{formatVnd(destination.ticketPrice)}</span>
             </div>
           </div>
         </div>
 
-        {/* Action Button (with stretched link to cover the whole card) */}
         <Link
-          href={`/destinations/${destination_id}`}
-          className="mt-4 flex items-center justify-center gap-1.5 w-full py-2.5 text-center text-xs font-bold text-white bg-brand-primary group-hover:bg-brand-primary-container rounded-xl transition-all shadow-sm active:scale-95 group/btn after:absolute after:inset-0 after:z-10"
+          href={`/destinations/${destination.id}`}
+          className="group/btn after:absolute after:inset-0 after:z-10 mt-4 flex w-full items-center justify-center gap-1.5 rounded-xl bg-brand-primary py-2.5 text-center text-xs font-bold text-white shadow-sm transition-all group-hover:bg-brand-primary-container active:scale-95"
         >
           <span>Xem chi tiết</span>
-          <ArrowRight className="size-3.5 group-hover/btn:translate-x-1.5 transition-transform duration-200" />
+          <ArrowRight className="size-3.5 transition-transform duration-200 group-hover/btn:translate-x-1.5" />
         </Link>
       </div>
     </div>
   );
 }
-
