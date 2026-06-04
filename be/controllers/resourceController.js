@@ -2,28 +2,28 @@ import { sendList, sendSuccess } from "../utils/httpResponse.js";
 
 export function createResourceController(resourceService) {
   return {
-    list(req, res) {
-      const items = resourceService.list(req.query);
+    async list(req, res) {
+      const items = await resourceService.list(req.query);
       return sendList(res, items);
     },
 
-    detail(req, res) {
-      const item = resourceService.getById(req.params.id);
+    async detail(req, res) {
+      const item = await resourceService.getById(req.params.id);
       return sendSuccess(res, item);
     },
 
-    create(req, res) {
-      const item = resourceService.create(req.body);
+    async create(req, res) {
+      const item = await resourceService.create(req.body);
       return sendSuccess(res, item, {}, 201);
     },
 
-    update(req, res) {
-      const item = resourceService.update(req.params.id, req.body);
+    async update(req, res) {
+      const item = await resourceService.update(req.params.id, req.body);
       return sendSuccess(res, item);
     },
 
-    remove(req, res) {
-      const item = resourceService.remove(req.params.id);
+    async remove(req, res) {
+      const item = await resourceService.remove(req.params.id);
       return sendSuccess(res, item);
     },
   };

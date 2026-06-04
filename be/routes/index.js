@@ -13,7 +13,9 @@ import reviewsRoutes from "./reviews.route.js";
 import notificationsRoutes from "./notifications.route.js";
 import weatherRoutes from "./weather.route.js";
 import trafficRoutes from "./traffic.route.js";
+import { authenticate, requireAdmin } from "../middlewares/authMiddleware.js";
 
+import adminDashboard from "./admin/dashboard.route.js";
 import adminDestinations from "./admin/destinations.route.js";
 import adminServices from "./admin/services.route.js";
 import adminCategories from "./admin/categories.route.js";
@@ -41,6 +43,8 @@ router.use(weatherRoutes);
 router.use(trafficRoutes);
 
 // admin
+router.use("/admin", authenticate, requireAdmin);
+router.use(adminDashboard);
 router.use(adminDestinations);
 router.use(adminServices);
 router.use(adminCategories);

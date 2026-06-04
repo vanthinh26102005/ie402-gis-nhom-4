@@ -24,11 +24,14 @@ import type {
 } from "@/lib/types/geojson";
 import type { ServiceFeatureProperties } from "@/lib/types/service";
 import { lngLatToLatLng } from "@/lib/format/gis";
+import { cn } from "@/lib/utils";
+
+export type { MapLayerId } from "@/components/map/LayerTogglePanel";
 
 const MAP_CENTER: [number, number] = [16.33, 107.66];
 const MAP_ZOOM = 8;
 
-const defaultLayerVisibility: Record<MapLayerId, boolean> = {
+export const defaultLayerVisibility: Record<MapLayerId, boolean> = {
   destinations: true,
   services: true,
   route: true,
@@ -51,14 +54,31 @@ type TourismLeafletMapProps = {
   destinations: GeoJsonFeatureCollection<DestinationFeatureProperties>;
   services: GeoJsonFeatureCollection<ServiceFeatureProperties>;
   routeGeometry?: GeoJsonLineString | null;
+  className?: string;
+  mapClassName?: string;
+  selectedDestinationId?: string | null;
+  showLayerPanel?: boolean;
+  variant?: "embedded" | "workspace";
+  visibleLayers?: Record<MapLayerId, boolean>;
+  onDestinationSelect?: (destinationId: string) => void;
+  onToggleLayer?: (layerId: MapLayerId) => void;
 };
 
 export function TourismLeafletMap({
+  className,
   destinations,
+  mapClassName,
+  onDestinationSelect,
+  onToggleLayer,
   services,
+  selectedDestinationId,
+  showLayerPanel = true,
   routeGeometry,
+  variant = "embedded",
+  visibleLayers: controlledVisibleLayers,
 }: TourismLeafletMapProps) {
-  const [visibleLayers, setVisibleLayers] = useState(defaultLayerVisibility);
+  const [internalVisibleLayers, setInternalVisibleLayers] = useState(defaultLayerVisibility);
+  const visibleLayers = controlledVisibleLayers ?? internalVisibleLayers;
 
   const counts = useMemo(
     () => ({
@@ -70,15 +90,29 @@ export function TourismLeafletMap({
   );
 
   function toggleLayer(layerId: MapLayerId) {
-    setVisibleLayers((current) => ({
+    if (onToggleLayer) {
+      onToggleLayer(layerId);
+      return;
+    }
+
+    setInternalVisibleLayers((current) => ({
       ...current,
       [layerId]: !current[layerId],
     }));
   }
 
+  const isWorkspace = variant === "workspace";
+
   return (
-    <section className="grid overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm lg:grid-cols-[minmax(0,1fr)_320px]">
-      <div className="relative min-h-[520px]">
+    <section
+      className={cn(
+        isWorkspace
+          ? "h-full min-h-screen overflow-hidden bg-slate-100"
+          : "grid overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm lg:grid-cols-[minmax(0,1fr)_320px]",
+        className,
+      )}
+    >
+      <div className={cn("relative", isWorkspace ? "h-full min-h-screen" : "min-h-[520px]")}>
         <MapContainer
           center={MAP_CENTER}
           zoom={MAP_ZOOM}
@@ -86,7 +120,7 @@ export function TourismLeafletMap({
           maxZoom={16}
           scrollWheelZoom
           zoomControl={false}
-          className="h-full min-h-[520px] w-full"
+          className={cn("h-full w-full", isWorkspace ? "min-h-screen" : "min-h-[520px]", mapClassName)}
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -101,8 +135,19 @@ export function TourismLeafletMap({
                 <Marker
                   key={feature.properties.id}
                   position={lngLatToLatLng(feature.geometry.coordinates)}
-                  icon={destinationIcon}
+                  icon={
+                    selectedDestinationId === feature.properties.id
+                      ? createMarkerIcon("#a87922")
+                      : destinationIcon
+                  }
                   title={feature.properties.name}
+                  eventHandlers={
+                    onDestinationSelect
+                      ? {
+                          click: () => onDestinationSelect(feature.properties.id),
+                        }
+                      : undefined
+                  }
                 >
                   <Popup>
                     <DestinationPopup properties={feature.properties} />
@@ -128,11 +173,13 @@ export function TourismLeafletMap({
         </MapContainer>
       </div>
 
-      <LayerTogglePanel
-        visibleLayers={visibleLayers}
-        counts={counts}
-        onToggle={toggleLayer}
-      />
+      {showLayerPanel ? (
+        <LayerTogglePanel
+          visibleLayers={visibleLayers}
+          counts={counts}
+          onToggle={toggleLayer}
+        />
+      ) : null}
     </section>
   );
 }

@@ -53,6 +53,14 @@
   --color-brand-secondary: #006a60;
   --color-brand-secondary-container: #8cf5e4;
   --color-brand-on-secondary-container: #007166;
+  --color-brand-gis: #21835f;
+  --color-brand-gis-soft: #d9f2e5;
+  --color-brand-heritage: #a87922;
+  --color-brand-heritage-soft: #f5ead1;
+  --color-brand-earth: #78572a;
+  --color-brand-danger: #b83826;
+  --color-brand-warning: #c98621;
+  --color-brand-success: #168457;
   --color-brand-tertiary: #193b13;
   --color-brand-tertiary-container: #305228;
   --color-brand-on-tertiary-container: #9dc48f;
@@ -66,6 +74,7 @@
   --color-brand-outline: #727780;
   --color-brand-outline-variant: #c2c7d1;
   --radius-brand-card: 1.5rem;
+  --shadow-brand-map: 0 24px 70px rgb(15 23 42 / 16%);
   --animate-spin-slow: spin 10s linear infinite;
 }
 

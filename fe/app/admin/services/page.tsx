@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Plus, Search, Edit, Store, Trash2 } from "lucide-react";
 import { Button } from "@/components/common/Button";
 import { Input } from "@/components/common/Input";
@@ -9,52 +9,59 @@ import { Card } from "@/components/common/Card";
 import { DataTable, Column, Action } from "@/components/admin/DataTable";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { EmptyState } from "@/components/admin/EmptyState";
-import { mockServices, type ServiceFacility } from "@/lib/admin-data";
+import { getAdminServices, type AdminService } from "@/lib/api/admin";
 import { REGION_PROVINCES } from "@/lib/constants";
 
-const serviceTypeLabels: Record<ServiceFacility["type"], string> = {
+const serviceTypeLabels: Record<AdminService["type"], string> = {
   hotel: "Khách sạn",
   restaurant: "Nhà hàng",
   parking: "Bãi đỗ xe",
   medical: "Y tế",
-  toilet: "Nhà vệ sinh",
-  atm: "ATM",
   gas_station: "Trạm xăng",
+  other: "Khác",
 };
 
-const serviceTypeColors: Record<ServiceFacility["type"], { bg: string; text: string }> = {
+const serviceTypeColors: Record<AdminService["type"], { bg: string; text: string }> = {
   hotel: { bg: "bg-blue-50", text: "text-blue-700" },
   restaurant: { bg: "bg-orange-50", text: "text-orange-700" },
   parking: { bg: "bg-slate-50", text: "text-slate-700" },
   medical: { bg: "bg-red-50", text: "text-red-700" },
-  toilet: { bg: "bg-teal-50", text: "text-teal-700" },
-  atm: { bg: "bg-emerald-50", text: "text-emerald-700" },
   gas_station: { bg: "bg-amber-50", text: "text-amber-700" },
+  other: { bg: "bg-teal-50", text: "text-teal-700" },
 };
 
 export default function AdminServicesPage() {
   const [search, setSearch] = useState("");
   const [province, setProvince] = useState("");
   const [serviceType, setServiceType] = useState("");
+  const [services, setServices] = useState<AdminService[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const serviceTypes = useMemo(() => {
-    const types = [...new Set(mockServices.map((s) => s.type))];
-    return types.map((t) => ({ label: serviceTypeLabels[t], value: t }));
+  useEffect(() => {
+    getAdminServices()
+      .then(setServices)
+      .catch(() => setServices([]))
+      .finally(() => setIsLoading(false));
   }, []);
 
+  const serviceTypes = useMemo(() => {
+    const types = [...new Set(services.map((s) => s.type))];
+    return types.map((t) => ({ label: serviceTypeLabels[t], value: t }));
+  }, [services]);
+
   const filteredData = useMemo(() => {
-    return mockServices.filter((svc) => {
+    return services.filter((svc) => {
       const matchesSearch =
         !search ||
         svc.name.toLowerCase().includes(search.toLowerCase()) ||
-        svc.address.toLowerCase().includes(search.toLowerCase());
-      const matchesProvince = !province || svc.province === province;
+        (svc.address || "").toLowerCase().includes(search.toLowerCase());
+      const matchesProvince = !province || svc.provinceName === province;
       const matchesType = !serviceType || svc.type === serviceType;
       return matchesSearch && matchesProvince && matchesType;
     });
-  }, [search, province, serviceType]);
+  }, [services, search, province, serviceType]);
 
-  const columns: Column<ServiceFacility>[] = [
+  const columns: Column<AdminService>[] = [
     {
       key: "name",
       header: "Tên dịch vụ",
@@ -79,7 +86,7 @@ export default function AdminServicesPage() {
       ),
     },
     {
-      key: "province",
+      key: "provinceName",
       header: "Tỉnh/Thành",
       width: "120px",
     },
@@ -94,17 +101,12 @@ export default function AdminServicesPage() {
       header: "Trạng thái",
       width: "110px",
       render: (row) => {
-        const statusMap = {
-          active: { label: "Hoạt động", type: "success" as const },
-          inactive: { label: "Tạm dừng", type: "error" as const },
-        };
-        const status = statusMap[row.status];
-        return <StatusBadge status={status.type} label={status.label} />;
+        return <StatusBadge status="success" label="Hoạt động" />;
       },
     },
   ];
 
-  const actions: Action<ServiceFacility>[] = [
+  const actions: Action<AdminService>[] = [
     {
       label: "Sửa",
       icon: Edit,
@@ -179,6 +181,7 @@ export default function AdminServicesPage() {
           actions={actions}
           keyExtractor={(row) => row.id}
           emptyMessage="Không có dịch vụ nào"
+          loading={isLoading}
         />
       )}
     </div>

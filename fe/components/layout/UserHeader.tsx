@@ -8,7 +8,7 @@ import { APP_NAME } from "@/lib/constants";
 import { userNavigationRoutes } from "@/lib/routes";
 
 export function UserHeader() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
   const visibleRoutes = userNavigationRoutes.filter((route) => {
     if (route.href === "/auth/login") {
       return !isAuthenticated;
@@ -45,7 +45,14 @@ export function UserHeader() {
               {route.label}
             </Link>
           ))}
-          {!isLoading && isAuthenticated ? <LogoutButton /> : null}
+          {!isLoading && isAuthenticated && user ? (
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-semibold text-slate-700">
+                {user.fullName || user.name || user.email}
+              </span>
+              <LogoutButton />
+            </div>
+          ) : null}
         </nav>
       </div>
     </header>
