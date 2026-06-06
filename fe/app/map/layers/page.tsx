@@ -18,7 +18,7 @@ export default function MapLayersPage() {
           </div>
           <Link
             href="/map"
-            className="inline-flex w-fit rounded-md bg-blue-700 px-4 py-2 text-sm font-medium text-white hover:bg-blue-800"
+            className="inline-flex w-fit rounded-lg bg-brand-primary px-4 py-2 text-sm font-medium text-white hover:bg-brand-primary-container"
           >
             Mở bản đồ
           </Link>

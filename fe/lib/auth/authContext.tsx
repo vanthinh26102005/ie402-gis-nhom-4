@@ -26,8 +26,8 @@ export type AuthContextType = {
     email: string,
     password: string,
     rememberMe?: boolean,
-  ) => Promise<void>;
-  register: (name: string, email: string, password: string) => Promise<void>;
+  ) => Promise<AuthUser>;
+  register: (name: string, email: string, password: string) => Promise<AuthUser>;
   logout: () => Promise<void>;
   updateUser: (user: AuthUser) => void;
 };
@@ -36,8 +36,12 @@ const defaultAuthContext: AuthContextType = {
   user: null,
   isLoading: true,
   isAuthenticated: false,
-  login: async () => {},
-  register: async () => {},
+  login: async () => {
+    throw new Error("AuthProvider is not ready.");
+  },
+  register: async () => {
+    throw new Error("AuthProvider is not ready.");
+  },
   logout: async () => {},
   updateUser: () => {},
 };
@@ -55,16 +59,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const token = getAuthToken();
         const storedUser = getUserInfo<AuthUser>();
 
-        if (token && storedUser) {
-          setUser(storedUser);
-        } else if (token) {
-          // Token exists but no user info - optionally verify with backend
-          // For now, we'll just clear it
-          clearAuthToken();
+        if (token || storedUser) {
+          const { getCurrentUser } = await import("@/lib/api/auth");
+          const result = await getCurrentUser();
+
+          if (!result.ok || !result.data) {
+            clearAuthToken();
+            clearUserInfo();
+            setUser(null);
+            return;
+          }
+
+          setUserInfo(result.data);
+          setUser(result.data);
         }
       } catch (error) {
         console.error("Auth check failed:", error);
         clearAuthToken();
+        clearUserInfo();
+        setUser(null);
       } finally {
         setIsLoading(false);
       }
@@ -86,6 +99,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setAuthToken(response.accessToken, rememberMe);
       setUserInfo(response.user);
       setUser(response.user);
+      return response.user;
     },
     [],
   );
@@ -103,6 +117,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setAuthToken(response.accessToken, false);
       setUserInfo(response.user);
       setUser(response.user);
+      return response.user;
     },
     [],
   );

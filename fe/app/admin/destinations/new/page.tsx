@@ -1,5 +1,5 @@
-import { DestinationForm } from "@/components/admin/DestinationForm";
+import { DestinationEditor } from "@/components/admin/DestinationEditor";
 
 export default function NewDestinationPage() {
-  return <DestinationForm />;
+  return <DestinationEditor />;
 }

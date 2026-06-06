@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { fetchDestinationFeatures, fetchServiceFeatures } from "@/lib/api/geo";
+import { getAllTraffic, getAllWeather } from "@/lib/api/weather-traffic";
 import type { DestinationFeatureProperties } from "@/lib/types/destination";
 import type { GeoJsonFeatureCollection } from "@/lib/types/geojson";
 import type { ServiceFeatureProperties } from "@/lib/types/service";
+import type { TrafficInfo, WeatherInfo } from "@/lib/types/weather-traffic";
 
 const emptyDestinations: GeoJsonFeatureCollection<DestinationFeatureProperties> = {
   type: "FeatureCollection",
@@ -19,6 +21,8 @@ const emptyServices: GeoJsonFeatureCollection<ServiceFeatureProperties> = {
 export function useMapFeatures() {
   const [destinations, setDestinations] = useState(emptyDestinations);
   const [services, setServices] = useState(emptyServices);
+  const [traffic, setTraffic] = useState<TrafficInfo[]>([]);
+  const [weather, setWeather] = useState<WeatherInfo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -29,14 +33,18 @@ export function useMapFeatures() {
       try {
         setIsLoading(true);
         setError(null);
-        const [destinationFeatures, serviceFeatures] = await Promise.all([
+        const [destinationFeatures, serviceFeatures, weatherTimeline, trafficTimeline] = await Promise.all([
           fetchDestinationFeatures(),
           fetchServiceFeatures(),
+          getAllWeather({ limit: 1000, mode: "all" }),
+          getAllTraffic({ limit: 1000, mode: "all" }),
         ]);
 
         if (isMounted) {
           setDestinations(destinationFeatures);
           setServices(serviceFeatures);
+          setTraffic(trafficTimeline);
+          setWeather(weatherTimeline);
         }
       } catch (loadError) {
         if (isMounted) {
@@ -56,5 +64,5 @@ export function useMapFeatures() {
     };
   }, []);
 
-  return { destinations, error, isLoading, services };
+  return { destinations, error, isLoading, services, traffic, weather };
 }

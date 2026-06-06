@@ -11,7 +11,7 @@ export function DestinationSummaryCard({ destination }: DestinationSummaryCardPr
   return (
     <Link
       href={`/destinations/${destination.id}`}
-      className="block cursor-pointer rounded-lg border border-slate-200 bg-white p-4 shadow-sm transition-colors hover:border-blue-200 hover:bg-blue-50/40 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+      className="block cursor-pointer rounded-lg border border-brand-outline-variant bg-white p-4 transition-colors hover:border-brand-secondary hover:bg-brand-surface-low focus:outline-none focus:ring-2 focus:ring-brand-secondary/20"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">

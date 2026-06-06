@@ -91,7 +91,7 @@ export function DestinationReviews({ reviews, onSubmitReview }: DestinationRevie
             </label>
             <Input
               type="text"
-              placeholder="Nhập tên của bạn..."
+              placeholder="Nhập tên của bạn…"
               value={reviewerName}
               onChange={(e) => setReviewerName(e.target.value)}
               required
@@ -136,7 +136,7 @@ export function DestinationReviews({ reviews, onSubmitReview }: DestinationRevie
             Nội dung đánh giá <span className="text-rose-500">*</span>
           </label>
           <textarea
-            placeholder="Hãy viết cảm nhận thực tế của bạn về địa điểm này..."
+            placeholder="Hãy viết cảm nhận thực tế của bạn về địa điểm này…"
             value={reviewContent}
             onChange={(e) => setReviewContent(e.target.value)}
             required
@@ -160,7 +160,7 @@ export function DestinationReviews({ reviews, onSubmitReview }: DestinationRevie
             className="px-5 text-xs h-9 flex items-center gap-1.5"
           >
             {submittingReview ? (
-              <>Gửi...</>
+              <>Đang gửi…</>
             ) : (
               <>
                 Gửi đánh giá <Send className="size-3" />
@@ -178,7 +178,7 @@ export function DestinationReviews({ reviews, onSubmitReview }: DestinationRevie
           </div>
         ) : (
           reviews.map((rev) => (
-            <div key={rev.review_id} className="border-b border-slate-100 last:border-0 pb-4 last:pb-0 flex gap-4 items-start hover:bg-slate-50/40 p-2.5 rounded-xl transition-all">
+            <div key={rev.review_id} className="border-b border-brand-outline-variant last:border-0 pb-4 last:pb-0 flex gap-4 items-start hover:bg-brand-surface-low p-2.5 rounded-lg transition-[background-color]">
               {/* User Avatar Initials */}
               <div className={`size-10 rounded-full bg-gradient-to-br ${getAvatarBg(rev.user_name)} text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-sm shadow-black/5`}>
                 {getInitials(rev.user_name)}

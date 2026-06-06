@@ -7,30 +7,28 @@ import { UserLayout } from "@/components/layout/UserLayout";
 export default function DestinationsPage() {
   return (
     <UserLayout>
-      <main className="min-h-screen bg-brand-background py-8">
-        <div className="container mx-auto max-w-7xl px-4">
-          <header className="mb-8 text-center md:text-left">
-            <div className="mb-2 inline-block rounded-full bg-brand-primary/5 px-3 py-1 text-xs font-bold uppercase tracking-wider text-brand-primary">
-              Bản đồ & du lịch
-            </div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-brand-primary md:text-4xl">
+      <main className="min-h-screen bg-white">
+        <div className="mx-auto max-w-[1280px]">
+          <header className="mb-8 flex flex-col gap-5 border-b border-brand-outline-variant pb-8 md:flex-row md:items-end md:justify-between">
+            <div className="space-y-3">
+              <p className="text-sm font-medium text-[#6a6a6a]">Bản đồ & du lịch</p>
+              <h1 className="text-[28px] font-bold leading-[1.43] tracking-normal text-brand-secondary">
               Khám phá điểm đến du lịch
-            </h1>
-            <div className="mx-auto mt-2 h-1 w-20 rounded-full bg-brand-secondary md:mx-0" />
-            <p className="mt-3 max-w-2xl text-xs font-medium leading-relaxed text-slate-600 md:text-sm">
-              Tìm kiếm và lựa chọn các di tích lịch sử, danh lam thắng cảnh, bãi biển,
-              bảo tàng và khu vui chơi từ dữ liệu PostgreSQL/PostGIS.
-            </p>
+              </h1>
+              <p className="max-w-2xl text-base leading-7 text-[#3f3f3f]">
+                Tìm kiếm di tích, danh lam, bãi biển, bảo tàng và khu vui chơi từ dữ liệu PostgreSQL/PostGIS.
+              </p>
+            </div>
 
-            <div className="mt-4 flex flex-wrap justify-center gap-3 md:justify-start">
+            <div className="flex flex-wrap gap-3">
               <Button
                 asChild
                 size="sm"
                 variant="outline"
-                className="cursor-pointer rounded-xl border-brand-primary/20 bg-brand-primary/5 text-xs font-bold text-brand-primary hover:bg-brand-primary/10"
+                className="cursor-pointer"
               >
                 <Link href="/route">
-                  <Navigation className="mr-1.5 size-3.5 text-brand-primary" />
+                  <Navigation className="mr-1.5 size-3.5" aria-hidden="true" />
                   Lập lộ trình đi
                 </Link>
               </Button>
@@ -38,10 +36,10 @@ export default function DestinationsPage() {
                 asChild
                 size="sm"
                 variant="outline"
-                className="cursor-pointer rounded-xl border-brand-secondary/20 bg-brand-secondary/5 text-xs font-bold text-brand-secondary hover:bg-brand-secondary/10"
+                className="cursor-pointer"
               >
                 <Link href="/weather-traffic">
-                  <CloudSun className="mr-1.5 size-3.5 text-brand-secondary" />
+                  <CloudSun className="mr-1.5 size-3.5" aria-hidden="true" />
                   Thời tiết & giao thông
                 </Link>
               </Button>

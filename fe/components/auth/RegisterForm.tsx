@@ -108,7 +108,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           aria-invalid={Boolean(fieldErrors.fullName)}
           className={cn(
             fieldErrors.fullName &&
-              "border-red-400 focus:border-red-500 focus:ring-red-100",
+              "border-brand-danger focus:border-brand-danger focus:ring-brand-danger/10",
           )}
         />
       </FormField>
@@ -124,7 +124,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           aria-invalid={Boolean(fieldErrors.email)}
           className={cn(
             fieldErrors.email &&
-              "border-red-400 focus:border-red-500 focus:ring-red-100",
+              "border-brand-danger focus:border-brand-danger focus:ring-brand-danger/10",
           )}
         />
       </FormField>
@@ -144,7 +144,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           aria-invalid={Boolean(fieldErrors.password)}
           className={cn(
             fieldErrors.password &&
-              "border-red-400 focus:border-red-500 focus:ring-red-100",
+              "border-brand-danger focus:border-brand-danger focus:ring-brand-danger/10",
           )}
         />
       </FormField>
@@ -164,13 +164,13 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           aria-invalid={Boolean(fieldErrors.confirmPassword)}
           className={cn(
             fieldErrors.confirmPassword &&
-              "border-red-400 focus:border-red-500 focus:ring-red-100",
+              "border-brand-danger focus:border-brand-danger focus:ring-brand-danger/10",
           )}
         />
       </FormField>
 
       <Button type="submit" className="w-full" disabled={isSubmitting}>
-        {isSubmitting ? "Đang tạo tài khoản..." : "Tạo tài khoản"}
+        {isSubmitting ? "Đang tạo tài khoản…" : "Tạo tài khoản"}
       </Button>
     </form>
   );

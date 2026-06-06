@@ -9,7 +9,7 @@ interface DestinationVideoTourProps {
 
 export function DestinationVideoTour({ videoUrl, destinationName }: DestinationVideoTourProps) {
   return (
-    <div className="bg-brand-surface-lowest rounded-brand-card p-6 md:p-8 border border-brand-outline-variant/30 shadow-sm transition-all">
+    <div className="bg-brand-surface-lowest rounded-brand-card p-6 md:p-8 border border-brand-outline-variant shadow-none transition-[border-color,box-shadow]">
       <h2 className="text-xl font-bold text-brand-primary border-b border-brand-outline-variant/20 pb-3 flex items-center gap-2 mb-4">
         <Video className="size-5 text-brand-primary" /> Video Tour địa điểm
       </h2>
@@ -18,7 +18,7 @@ export function DestinationVideoTour({ videoUrl, destinationName }: DestinationV
         <iframe
           src={videoUrl}
           title={`Video tour ${destinationName}`}
-          className="absolute inset-0 w-full h-full border-0 transition-all duration-300"
+          className="absolute inset-0 w-full h-full border-0 transition-opacity duration-300"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen
         ></iframe>

@@ -12,7 +12,7 @@ export default function RoutePage() {
         <main className="flex min-h-screen items-center justify-center bg-brand-background py-8">
           <div className="text-center font-bold text-slate-500">
             <RotateCw className="mx-auto mb-2 size-8 animate-spin text-brand-primary" />
-            Đang tải trang chỉ đường...
+            Đang tải trang chỉ đường…
           </div>
         </main>
       }

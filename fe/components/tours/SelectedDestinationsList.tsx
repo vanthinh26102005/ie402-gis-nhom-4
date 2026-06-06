@@ -2,11 +2,17 @@
 
 import { ArrowDown, ArrowUp, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { Destination } from "@/lib/data/destinations";
 import { cn } from "@/lib/utils";
 
+export type SelectedTourDestination = {
+  id: string;
+  name: string;
+  provinceName: string;
+  categoryName: string | null;
+};
+
 type SelectedDestinationsListProps = {
-  items: Destination[];
+  items: SelectedTourDestination[];
   onMoveUp: (index: number) => void;
   onMoveDown: (index: number) => void;
   onRemove: (index: number) => void;
@@ -22,7 +28,7 @@ export function SelectedDestinationsList({
 }: SelectedDestinationsListProps) {
   if (items.length === 0) {
     return (
-      <p className="rounded-md border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">
+      <p className="rounded-lg border border-dashed border-brand-outline-variant bg-brand-surface-low px-4 py-6 text-center text-sm text-[#6a6a6a]">
         Chưa có điểm đến nào. Chọn từ danh sách bên dưới và bấm &quot;Thêm vào
         tour&quot;.
       </p>
@@ -34,15 +40,15 @@ export function SelectedDestinationsList({
       {items.map((item, index) => (
         <li
           key={item.id}
-          className="flex items-center gap-2 rounded-md border border-slate-200 bg-white px-3 py-2"
+          className="flex items-center gap-2 rounded-lg border border-brand-outline-variant bg-white px-3 py-2"
         >
-          <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-semibold text-blue-800">
+          <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-brand-primary text-xs font-semibold text-white">
             {index + 1}
           </span>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-medium text-slate-900">{item.name}</p>
-            <p className="text-xs text-slate-500">
-              {item.province} · {item.category}
+            <p className="truncate text-sm font-medium text-brand-secondary">{item.name}</p>
+            <p className="text-xs text-[#6a6a6a]">
+              {item.provinceName} · {item.categoryName || "Chưa phân loại"}
             </p>
           </div>
           <div className="flex shrink-0 gap-1">
@@ -73,7 +79,7 @@ export function SelectedDestinationsList({
               onClick={() => onRemove(index)}
               aria-label={`Xóa ${item.name} khỏi tour`}
             >
-              <Trash2 className="size-4 text-red-600" />
+              <Trash2 className="size-4 text-brand-danger" aria-hidden="true" />
             </Button>
           </div>
         </li>

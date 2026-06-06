@@ -7,8 +7,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: "Geist", "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "Geist Mono", "Geist Mono Fallback", ui-monospace, monospace;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", "SF Mono", Consolas, "Liberation Mono", monospace;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -46,72 +46,72 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
-  /* Heritage & Horizon Brand Design Tokens */
-  --color-brand-primary: #00355f;
-  --color-brand-primary-container: #0f4c81;
-  --color-brand-on-primary-container: #8ebdf9;
-  --color-brand-secondary: #006a60;
-  --color-brand-secondary-container: #8cf5e4;
-  --color-brand-on-secondary-container: #007166;
-  --color-brand-gis: #21835f;
-  --color-brand-gis-soft: #d9f2e5;
-  --color-brand-heritage: #a87922;
-  --color-brand-heritage-soft: #f5ead1;
-  --color-brand-earth: #78572a;
-  --color-brand-danger: #b83826;
-  --color-brand-warning: #c98621;
-  --color-brand-success: #168457;
-  --color-brand-tertiary: #193b13;
-  --color-brand-tertiary-container: #305228;
-  --color-brand-on-tertiary-container: #9dc48f;
-  --color-brand-background: #f8f9fa;
-  --color-brand-surface: #f8f9fa;
+  /* Travel marketplace design tokens from DESIGN.md */
+  --color-brand-primary: #ff385c;
+  --color-brand-primary-container: #e00b41;
+  --color-brand-on-primary-container: #ffffff;
+  --color-brand-secondary: #222222;
+  --color-brand-secondary-container: #f7f7f7;
+  --color-brand-on-secondary-container: #222222;
+  --color-brand-gis: #ff385c;
+  --color-brand-gis-soft: #ffd1da;
+  --color-brand-heritage: #460479;
+  --color-brand-heritage-soft: #f7f7f7;
+  --color-brand-earth: #3f3f3f;
+  --color-brand-danger: #c13515;
+  --color-brand-warning: #c13515;
+  --color-brand-success: #222222;
+  --color-brand-tertiary: #92174d;
+  --color-brand-tertiary-container: #f7f7f7;
+  --color-brand-on-tertiary-container: #222222;
+  --color-brand-background: #ffffff;
+  --color-brand-surface: #ffffff;
   --color-brand-surface-lowest: #ffffff;
-  --color-brand-surface-low: #f3f4f5;
-  --color-brand-surface-container: #edeeef;
-  --color-brand-surface-high: #e7e8e9;
-  --color-brand-surface-highest: #e1e3e4;
-  --color-brand-outline: #727780;
-  --color-brand-outline-variant: #c2c7d1;
-  --radius-brand-card: 1.5rem;
-  --shadow-brand-map: 0 24px 70px rgb(15 23 42 / 16%);
+  --color-brand-surface-low: #f7f7f7;
+  --color-brand-surface-container: #f2f2f2;
+  --color-brand-surface-high: #ebebeb;
+  --color-brand-surface-highest: #dddddd;
+  --color-brand-outline: #c1c1c1;
+  --color-brand-outline-variant: #dddddd;
+  --radius-brand-card: 0.875rem;
+  --shadow-brand-map: rgba(0, 0, 0, 0.02) 0 0 0 1px, rgba(0, 0, 0, 0.04) 0 2px 6px 0, rgba(0, 0, 0, 0.1) 0 4px 8px 0;
   --animate-spin-slow: spin 10s linear infinite;
 }
 
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.19 0.035 240);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.19 0.035 240);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.19 0.035 240);
-  --primary: oklch(0.49 0.15 239);
-  --primary-foreground: oklch(0.99 0.01 210);
-  --secondary: oklch(0.96 0.035 188);
-  --secondary-foreground: oklch(0.28 0.08 205);
-  --muted: oklch(0.96 0.015 220);
-  --muted-foreground: oklch(0.46 0.035 235);
-  --accent: oklch(0.94 0.08 154);
-  --accent-foreground: oklch(0.24 0.08 158);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.9 0.025 225);
-  --input: oklch(0.9 0.025 225);
-  --ring: oklch(0.64 0.12 190);
-  --chart-1: oklch(0.809 0.105 251.813);
-  --chart-2: oklch(0.623 0.214 259.815);
-  --chart-3: oklch(0.546 0.245 262.881);
-  --chart-4: oklch(0.488 0.243 264.376);
-  --chart-5: oklch(0.424 0.199 265.638);
+  --background: #ffffff;
+  --foreground: #222222;
+  --card: #ffffff;
+  --card-foreground: #222222;
+  --popover: #ffffff;
+  --popover-foreground: #222222;
+  --primary: #ff385c;
+  --primary-foreground: #ffffff;
+  --secondary: #f7f7f7;
+  --secondary-foreground: #222222;
+  --muted: #f7f7f7;
+  --muted-foreground: #6a6a6a;
+  --accent: #f7f7f7;
+  --accent-foreground: #222222;
+  --destructive: #c13515;
+  --border: #dddddd;
+  --input: #dddddd;
+  --ring: #222222;
+  --chart-1: #ff385c;
+  --chart-2: #222222;
+  --chart-3: #6a6a6a;
+  --chart-4: #460479;
+  --chart-5: #92174d;
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0.01 210);
-  --sidebar-foreground: oklch(0.19 0.035 240);
-  --sidebar-primary: oklch(0.49 0.15 239);
-  --sidebar-primary-foreground: oklch(0.99 0.01 210);
-  --sidebar-accent: oklch(0.94 0.08 154);
-  --sidebar-accent-foreground: oklch(0.24 0.08 158);
-  --sidebar-border: oklch(0.9 0.025 225);
-  --sidebar-ring: oklch(0.64 0.12 190);
+  --sidebar: #ffffff;
+  --sidebar-foreground: #222222;
+  --sidebar-primary: #ff385c;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f7f7f7;
+  --sidebar-accent-foreground: #222222;
+  --sidebar-border: #dddddd;
+  --sidebar-ring: #222222;
 }
 
 .dark {
@@ -155,9 +155,28 @@
   body {
     @apply bg-background text-foreground;
     min-height: 100vh;
+    color-scheme: light;
+    text-rendering: optimizeLegibility;
+    -webkit-tap-highlight-color: rgb(255 56 92 / 14%);
   }
   html {
     @apply font-sans;
+    scroll-behavior: smooth;
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    touch-action: manipulation;
   }
 }
 
@@ -188,6 +207,30 @@
   content: "";
   border-radius: 999px;
   background: white;
+}
+
+.tourism-map-route-pin {
+  background: transparent;
+  border: 0;
+}
+
+.tourism-map-route-pin span {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border: 3px solid white;
+  border-radius: 999px 999px 999px 0;
+  box-shadow: 0 10px 24px rgb(15 23 42 / 28%);
+  color: white;
+  font-size: 0.78rem;
+  font-weight: 900;
+  transform: rotate(-45deg);
+}
+
+.tourism-map-route-pin strong {
+  display: block;
+  transform: rotate(45deg);
 }
 
 .leaflet-popup-content-wrapper {

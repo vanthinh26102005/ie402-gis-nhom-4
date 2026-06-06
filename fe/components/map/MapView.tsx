@@ -18,7 +18,7 @@ const TourismLeafletMap = dynamic(
     ssr: false,
     loading: () => (
       <div className="flex min-h-[520px] items-center justify-center rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-600">
-        Đang tải bản đồ...
+        Đang tải bản đồ…
       </div>
     ),
   },
@@ -47,7 +47,7 @@ export function MapView({ enableRoutingControls = false, routeGeometry }: MapVie
   if (isLoading) {
     return (
       <div className="flex min-h-[520px] items-center justify-center rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-600">
-        Đang tải dữ liệu GIS...
+        Đang tải dữ liệu GIS…
       </div>
     );
   }
@@ -143,7 +143,7 @@ function MapRoutingPanel({
         <div className="flex flex-wrap gap-2">
           <Button type="button" disabled={isRouteDisabled} onClick={onRouteSearch}>
             <Route className="h-4 w-4" aria-hidden="true" />
-            {isRouting ? "Đang tính..." : "Vẽ tuyến"}
+            {isRouting ? "Đang tính…" : "Vẽ tuyến"}
           </Button>
           <Button type="button" variant="secondary" disabled={!route && !error} onClick={onClearRoute}>
             <X className="h-4 w-4" aria-hidden="true" />

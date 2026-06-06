@@ -1,16 +1,14 @@
 import express from "express";
 import { asyncHandler } from "../../utils/asyncHandler.js";
-import { createResourceController } from "../../controllers/resourceController.js";
-import { weatherService } from "../../services/domainServices.js";
+import { adminWeatherController } from "../../controllers/adminObservationController.js";
 
 const router = express.Router();
 
-const weather = createResourceController(weatherService);
-
-router.get("/admin/weather", asyncHandler(weather.list));
-router.get("/admin/weather/:id", asyncHandler(weather.detail));
-router.post("/admin/weather", asyncHandler(weather.create));
-router.put("/admin/weather/:id", asyncHandler(weather.update));
-router.delete("/admin/weather/:id", asyncHandler(weather.remove));
+router.get("/admin/weather", asyncHandler(adminWeatherController.list));
+router.get("/admin/weather/stats", asyncHandler(adminWeatherController.stats));
+router.get("/admin/weather/:id", asyncHandler(adminWeatherController.detail));
+router.post("/admin/weather", asyncHandler(adminWeatherController.create));
+router.put("/admin/weather/:id", asyncHandler(adminWeatherController.update));
+router.delete("/admin/weather/:id", asyncHandler(adminWeatherController.remove));
 
 export default router;

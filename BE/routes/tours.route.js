@@ -1,14 +1,14 @@
 import express from "express";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { createResourceController } from "../controllers/resourceController.js";
-import { tourService } from "../services/domainServices.js";
+import { authenticate } from "../middlewares/authMiddleware.js";
+import * as tourController from "../controllers/tourController.js";
 
 const router = express.Router();
 
-const tours = createResourceController(tourService);
-
-router.get("/tours", asyncHandler(tours.list));
-router.post("/tours", asyncHandler(tours.create));
-router.get("/tours/:id", asyncHandler(tours.detail));
+router.get("/tours", authenticate, asyncHandler(tourController.list));
+router.post("/tours", authenticate, asyncHandler(tourController.create));
+router.get("/tours/:id", authenticate, asyncHandler(tourController.detail));
+router.put("/tours/:id", authenticate, asyncHandler(tourController.update));
+router.delete("/tours/:id", authenticate, asyncHandler(tourController.remove));
 
 export default router;

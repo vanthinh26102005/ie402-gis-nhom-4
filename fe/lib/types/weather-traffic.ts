@@ -1,3 +1,5 @@
+import type { Coordinate, GeoJsonPoint } from "@/lib/types/geojson";
+
 export type WeatherStatusLabel =
   | "Nắng ráo"
   | "Nắng nóng"
@@ -18,6 +20,8 @@ export type WeatherInfo = {
   weather_status: WeatherStatusLabel;
   wind_speed: number;
   observed_at: string;
+  location?: Coordinate;
+  geometry?: GeoJsonPoint;
 };
 
 export type TrafficInfo = {
@@ -30,6 +34,8 @@ export type TrafficInfo = {
   status: string;
   description: string;
   observed_at: string;
+  location?: Coordinate;
+  geometry?: GeoJsonPoint;
 };
 
 export type TrafficAlert = {

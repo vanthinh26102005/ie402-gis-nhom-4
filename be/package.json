@@ -8,7 +8,11 @@
     "dev": "nodemon server.js",
     "db:schema": "node db/scripts/run-sql.js db/schema.sql",
     "db:seed": "node db/scripts/run-sql.js db/seed.sql",
+    "db:seed:rich": "node db/scripts/run-sql.js db/seed.rich.sql",
+    "db:migrate:planner": "node db/scripts/run-sql.js db/migrations/002_tour_planner.sql",
+    "db:migrate:tour-leg-notes": "node db/scripts/run-sql.js db/migrations/003_tour_leg_notes.sql",
     "db:reset": "npm run db:schema && npm run db:seed",
+    "db:reset:rich": "npm run db:schema && npm run db:seed:rich",
     "db:verify": "node db/scripts/verify-db.js"
   },
   "dependencies": {

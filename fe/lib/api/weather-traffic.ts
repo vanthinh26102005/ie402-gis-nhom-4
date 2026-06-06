@@ -17,6 +17,11 @@ type WeatherApiItem = {
   weather_status: string | null;
   wind_speed: number | string | null;
   observed_at: string;
+  location?: {
+    latitude: number | string | null;
+    longitude: number | string | null;
+  };
+  geometry?: WeatherInfo["geometry"];
 };
 
 type TrafficApiItem = {
@@ -28,6 +33,20 @@ type TrafficApiItem = {
   status: string;
   description: string | null;
   observed_at: string;
+  location?: {
+    latitude: number | string | null;
+    longitude: number | string | null;
+  };
+  geometry?: TrafficInfo["geometry"];
+};
+
+type TemporalQuery = {
+  mode?: "latest" | "all" | "at";
+  at?: string;
+  from?: string;
+  to?: string;
+  bbox?: string;
+  limit?: number;
 };
 
 function normalizeWeatherStatus(status: string | null, temperature: number): WeatherStatusLabel {
@@ -54,8 +73,22 @@ function toNumber(value: number | string | null) {
   return value === null ? 0 : Number(value);
 }
 
-export async function getAllWeather(): Promise<WeatherInfo[]> {
-  const weather = await fetchApi<WeatherApiItem[]>("/weather");
+function buildTemporalSearchParams(query?: TemporalQuery) {
+  const params = new URLSearchParams();
+
+  if (!query) return "";
+  Object.entries(query).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") {
+      params.set(key, String(value));
+    }
+  });
+
+  const queryString = params.toString();
+  return queryString ? `?${queryString}` : "";
+}
+
+export async function getAllWeather(query?: TemporalQuery): Promise<WeatherInfo[]> {
+  const weather = await fetchApi<WeatherApiItem[]>(`/weather${buildTemporalSearchParams(query)}`);
 
   return weather.map((item) => {
     const temperature = toNumber(item.temperature);
@@ -70,12 +103,19 @@ export async function getAllWeather(): Promise<WeatherInfo[]> {
       weather_status: normalizeWeatherStatus(item.weather_status, temperature),
       wind_speed: toNumber(item.wind_speed),
       observed_at: item.observed_at,
+      location: item.location
+        ? {
+            latitude: toNumber(item.location.latitude),
+            longitude: toNumber(item.location.longitude),
+          }
+        : undefined,
+      geometry: item.geometry,
     };
   });
 }
 
-export async function getAllTraffic(): Promise<TrafficInfo[]> {
-  const traffic = await fetchApi<TrafficApiItem[]>("/traffic");
+export async function getAllTraffic(query?: TemporalQuery): Promise<TrafficInfo[]> {
+  const traffic = await fetchApi<TrafficApiItem[]>(`/traffic${buildTemporalSearchParams(query)}`);
 
   return traffic.map((item) => ({
     traffic_id: item.traffic_id,
@@ -87,6 +127,13 @@ export async function getAllTraffic(): Promise<TrafficInfo[]> {
     status: item.status,
     description: item.description ?? "Chưa có mô tả tình trạng giao thông.",
     observed_at: item.observed_at,
+    location: item.location
+      ? {
+          latitude: toNumber(item.location.latitude),
+          longitude: toNumber(item.location.longitude),
+        }
+      : undefined,
+    geometry: item.geometry,
   }));
 }
 

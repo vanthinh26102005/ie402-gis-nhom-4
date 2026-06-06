@@ -41,9 +41,9 @@ export const userNavigationRoutes: RouteItem[] = [
     icon: "destination",
   },
   {
-    label: "Tạo tour",
-    href: "/tours/create",
-    description: "Tạo hành trình tham quan cá nhân.",
+    label: "Kế hoạch",
+    href: "/tours",
+    description: "Tạo và quản lý kế hoạch chuyến đi.",
     icon: "tour",
   },
   {
@@ -57,6 +57,12 @@ export const userNavigationRoutes: RouteItem[] = [
     href: "/weather-traffic",
     description: "Xem thông tin thời tiết và giao thông.",
     icon: "weather",
+  },
+  {
+    label: "Đánh giá",
+    href: "/reviews",
+    description: "Gửi đánh giá và phản hồi điểm du lịch.",
+    icon: "review",
   },
   {
     label: "Đăng nhập",

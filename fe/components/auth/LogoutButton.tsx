@@ -2,16 +2,18 @@
 
 import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { Button } from "@/components/common/Button";
 import { useAuth } from "@/lib/auth/authContext";
 import { cn } from "@/lib/utils";
 
 type LogoutButtonProps = {
   className?: string;
+  icon?: ReactNode;
+  labelClassName?: string;
 };
 
-export function LogoutButton({ className }: LogoutButtonProps) {
+export function LogoutButton({ className, icon, labelClassName }: LogoutButtonProps) {
   const router = useRouter();
   const { logout } = useAuth();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -37,8 +39,8 @@ export function LogoutButton({ className }: LogoutButtonProps) {
         className,
       )}
     >
-      <LogOut className="size-4" aria-hidden="true" />
-      {isLoggingOut ? "Đang đăng xuất..." : "Đăng xuất"}
+      {icon ?? <LogOut className="size-4" aria-hidden="true" />}
+      <span className={labelClassName}>{isLoggingOut ? "Đang đăng xuất…" : "Đăng xuất"}</span>
     </Button>
   );
 }

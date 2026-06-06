@@ -1,8 +1,15 @@
 "use client";
 
-import { Eye, EyeOff, MapPin, Route, Settings2 } from "lucide-react";
+import { Activity, Car, CloudSun, Eye, EyeOff, Flame, MapPin, Route, Settings2 } from "lucide-react";
 
-export type MapLayerId = "destinations" | "services" | "route";
+export type MapLayerId =
+  | "destinations"
+  | "services"
+  | "weather"
+  | "traffic"
+  | "trafficHeatmap"
+  | "weatherRiskHeatmap"
+  | "route";
 
 const layerMeta = {
   destinations: {
@@ -16,6 +23,30 @@ const layerMeta = {
     description: "Khách sạn, nhà hàng, bãi đỗ, y tế và tiện ích.",
     color: "#059669",
     icon: Settings2,
+  },
+  weather: {
+    label: "Thời tiết",
+    description: "Quan trắc thời tiết theo mốc thời gian.",
+    color: "#ff385c",
+    icon: CloudSun,
+  },
+  traffic: {
+    label: "Giao thông",
+    description: "Tình trạng giao thông theo mốc thời gian.",
+    color: "#222222",
+    icon: Car,
+  },
+  trafficHeatmap: {
+    label: "Heatmap kẹt xe",
+    description: "Vùng nóng giao thông theo mức độ ùn tắc.",
+    color: "#dc2626",
+    icon: Activity,
+  },
+  weatherRiskHeatmap: {
+    label: "Heatmap thời tiết",
+    description: "Vùng rủi ro theo mưa, gió, nhiệt độ và độ ẩm.",
+    color: "#ff385c",
+    icon: Flame,
   },
   route: {
     label: "Lộ trình",
@@ -61,7 +92,7 @@ export function LayerTogglePanel({
               type="button"
               aria-pressed={isVisible}
               onClick={() => onToggle(layerId)}
-              className="flex min-h-24 w-full cursor-pointer gap-3 rounded-md border border-slate-200 bg-white p-3 text-left transition-colors hover:border-blue-200 hover:bg-blue-50/40 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+              className="flex min-h-24 w-full cursor-pointer gap-3 rounded-lg border border-brand-outline-variant bg-white p-3 text-left transition-colors hover:border-brand-secondary hover:bg-brand-surface-low focus:outline-none focus:ring-2 focus:ring-brand-secondary/20"
             >
               <span
                 className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-md text-white"

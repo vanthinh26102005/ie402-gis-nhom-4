@@ -7,23 +7,23 @@ function getCongestionStyles(level: TrafficInfo["congestion_level"]) {
   switch (level) {
     case "Thông thoáng":
       return {
-        badge: "border-emerald-200 bg-emerald-50 text-emerald-700",
-        indicator: "bg-emerald-500",
+        badge: "border-brand-outline-variant bg-brand-surface-low text-brand-secondary",
+        indicator: "bg-brand-secondary",
       };
     case "Chậm":
       return {
-        badge: "border-amber-200 bg-amber-50 text-amber-700",
-        indicator: "bg-amber-500",
+        badge: "border-brand-danger/25 bg-brand-surface-low text-brand-danger",
+        indicator: "bg-brand-danger",
       };
     case "Ùn tắc":
       return {
-        badge: "border-rose-200 bg-rose-50 text-rose-700",
-        indicator: "bg-rose-500",
+        badge: "border-brand-danger/25 bg-brand-surface-low text-brand-danger",
+        indicator: "bg-brand-danger",
       };
     case "Cấm đường":
       return {
-        badge: "border-purple-200 bg-purple-50 text-purple-700",
-        indicator: "bg-purple-500",
+        badge: "border-brand-danger/25 bg-brand-surface-low text-brand-danger",
+        indicator: "bg-brand-danger",
       };
   }
 }
@@ -33,7 +33,7 @@ export function TrafficCard({ traffic }: { traffic: TrafficInfo }) {
   const title = traffic.destination_name || traffic.route_name || traffic.destination_id;
 
   return (
-    <article className="space-y-3 rounded-lg border border-slate-200 bg-white p-5 shadow-sm transition-colors hover:border-blue-200">
+    <article className="space-y-3 rounded-brand-card border border-brand-outline-variant bg-white p-5 transition-[border-color,box-shadow] hover:border-brand-secondary hover:shadow-[var(--shadow-brand-map)]">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-xs font-bold uppercase tracking-wide text-slate-400">

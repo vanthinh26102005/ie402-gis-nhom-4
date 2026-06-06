@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { Clock, MapPin, Star, Ticket } from "lucide-react";
+import { DestinationReviewSection } from "@/components/destinations/DestinationReviewSection";
 import { fetchDestinationDetail } from "@/lib/api/destinations";
 import { formatVnd } from "@/lib/format/currency";
 import type { DestinationDetail as DestinationDetailType } from "@/lib/types/destination";
@@ -13,7 +14,7 @@ const DestinationMiniMap = dynamic(
     ssr: false,
     loading: () => (
       <div className="flex h-72 items-center justify-center rounded-lg border border-slate-200 bg-white text-sm text-slate-600">
-        Đang tải bản đồ vị trí...
+        Đang tải bản đồ vị trí…
       </div>
     ),
   },
@@ -60,7 +61,7 @@ export function DestinationDetail({ id }: DestinationDetailProps) {
   if (isLoading) {
     return (
       <div className="rounded-lg border border-slate-200 bg-white p-5 text-sm text-slate-600">
-        Đang tải chi tiết địa điểm...
+        Đang tải chi tiết địa điểm…
       </div>
     );
   }
@@ -126,6 +127,7 @@ export function DestinationDetail({ id }: DestinationDetailProps) {
             value={destination.rating?.toFixed(1) || "N/A"}
           />
         </div>
+        <DestinationReviewSection destinationId={destination.id} destinationName={destination.name} />
       </section>
 
       <aside className="space-y-4">
