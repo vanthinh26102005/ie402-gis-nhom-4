@@ -41,15 +41,15 @@ export function AuthPanel({ initialMode = "login" }: AuthPanelProps) {
   return (
     <div className="mx-auto w-full max-w-md space-y-6">
       <div className="space-y-2 text-center sm:text-left">
-        <h1 className="text-3xl font-semibold tracking-tight text-slate-950">
+        <h1 className="text-[28px] font-bold leading-[1.43] tracking-normal text-brand-secondary">
           {copy.title}
         </h1>
-        <p className="text-sm leading-6 text-slate-600">{copy.description}</p>
+        <p className="text-sm leading-6 text-[#6a6a6a]">{copy.description}</p>
       </div>
 
-      <Card className="border-blue-100 bg-gradient-to-br from-white to-blue-50/50">
+      <Card>
         <div
-          className="mb-6 grid grid-cols-2 gap-1 rounded-lg border border-slate-200 bg-slate-100 p-1"
+          className="mb-6 grid grid-cols-2 gap-1 rounded-full border border-brand-outline-variant bg-brand-surface-low p-1"
           role="tablist"
           aria-label="Chọn đăng nhập hoặc đăng ký"
         >
@@ -59,10 +59,10 @@ export function AuthPanel({ initialMode = "login" }: AuthPanelProps) {
             aria-selected={mode === "login"}
             onClick={() => switchMode("login")}
             className={cn(
-              "rounded-md px-3 py-2 text-sm font-medium transition",
+              "rounded-full px-3 py-2 text-sm font-medium transition-[background-color,color,box-shadow]",
               mode === "login"
-                ? "bg-white text-blue-800 shadow-sm"
-                : "text-slate-600 hover:text-slate-900",
+                ? "bg-white text-brand-secondary shadow-[var(--shadow-brand-map)]"
+                : "text-[#6a6a6a] hover:text-brand-secondary",
             )}
           >
             Đăng nhập
@@ -73,10 +73,10 @@ export function AuthPanel({ initialMode = "login" }: AuthPanelProps) {
             aria-selected={mode === "register"}
             onClick={() => switchMode("register")}
             className={cn(
-              "rounded-md px-3 py-2 text-sm font-medium transition",
+              "rounded-full px-3 py-2 text-sm font-medium transition-[background-color,color,box-shadow]",
               mode === "register"
-                ? "bg-white text-blue-800 shadow-sm"
-                : "text-slate-600 hover:text-slate-900",
+                ? "bg-white text-brand-secondary shadow-[var(--shadow-brand-map)]"
+                : "text-[#6a6a6a] hover:text-brand-secondary",
             )}
           >
             Đăng ký
@@ -95,12 +95,12 @@ export function AuthPanel({ initialMode = "login" }: AuthPanelProps) {
           )}
         </div>
 
-        <p className="mt-6 text-center text-sm text-slate-600">
+        <p className="mt-6 text-center text-sm text-[#6a6a6a]">
           {copy.switchLabel}{" "}
           <button
             type="button"
             onClick={() => switchMode(copy.switchTarget)}
-            className="font-medium text-blue-700 underline-offset-2 hover:underline"
+            className="font-medium text-brand-primary underline-offset-2 hover:underline"
           >
             {copy.switchTarget === "login" ? "Đăng nhập ngay" : "Đăng ký ngay"}
           </button>

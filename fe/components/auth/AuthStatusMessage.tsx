@@ -13,8 +13,8 @@ export function AuthStatusMessage({ variant, message }: AuthStatusMessageProps) 
       className={cn(
         "rounded-md border px-3 py-2 text-sm",
         variant === "success"
-          ? "border-emerald-200 bg-emerald-50 text-emerald-900"
-          : "border-red-200 bg-red-50 text-red-900",
+          ? "border-brand-outline-variant bg-brand-surface-low text-brand-secondary"
+          : "border-brand-danger/25 bg-brand-surface-low text-brand-danger",
       )}
     >
       {message}

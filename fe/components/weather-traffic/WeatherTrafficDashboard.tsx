@@ -83,9 +83,6 @@ export function WeatherTrafficDashboard({ initialProvince = "" }: WeatherTraffic
     <div className="space-y-8">
       <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <p className="text-sm font-semibold uppercase text-emerald-700">
-            Dữ liệu demo PostGIS
-          </p>
           <h1 className="mt-1 text-3xl font-semibold tracking-tight text-slate-950">
             Thời tiết và giao thông du lịch
           </h1>
@@ -151,7 +148,7 @@ export function WeatherTrafficDashboard({ initialProvince = "" }: WeatherTraffic
 
           <section className="space-y-5">
             <h2 className="flex items-center gap-2 border-b border-slate-200 pb-2 text-lg font-semibold text-slate-950">
-              <Car className="size-5 text-blue-700" aria-hidden="true" />
+              <Car className="size-5 text-brand-secondary" aria-hidden="true" />
               Bản tin giao thông
             </h2>
             {filteredTraffic.length ? (

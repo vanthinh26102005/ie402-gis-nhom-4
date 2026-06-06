@@ -8,7 +8,7 @@ import { Button } from "@/components/common/Button";
 import { Select } from "@/components/common/Select";
 import { Textarea } from "@/components/common/Textarea";
 import { submitReview } from "@/lib/api";
-import { MOCK_DESTINATIONS } from "@/lib/data/destinations";
+import { useDestinations } from "@/lib/hooks/useDestinations";
 import { cn } from "@/lib/utils";
 import {
   hasFieldErrors,
@@ -16,12 +16,8 @@ import {
   type FieldErrors,
 } from "@/lib/validations/review";
 
-const destinationOptions = MOCK_DESTINATIONS.map((d) => ({
-  label: `${d.name} (${d.province})`,
-  value: d.id,
-}));
-
 export function SubmitReviewForm() {
+  const { destinations, error: destinationsError, isLoading } = useDestinations();
   const [destinationId, setDestinationId] = useState("");
   const [rating, setRating] = useState(0);
   const [content, setContent] = useState("");
@@ -33,6 +29,10 @@ export function SubmitReviewForm() {
     message: string;
   } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const destinationOptions = destinations.map((destination) => ({
+    label: `${destination.name} (${destination.province.name})`,
+    value: destination.id,
+  }));
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -89,7 +89,7 @@ export function SubmitReviewForm() {
       <FormField
         id="review-destination"
         label="Địa điểm"
-        error={fieldErrors.destinationId}
+        error={fieldErrors.destinationId || destinationsError || undefined}
       >
         <Select
           id="review-destination"
@@ -98,11 +98,18 @@ export function SubmitReviewForm() {
             setDestinationId(e.target.value);
             clearFieldError("destinationId");
           }}
-          options={[{ label: "Chọn điểm du lịch...", value: "" }, ...destinationOptions]}
+          options={[
+            {
+              label: isLoading ? "Đang tải điểm du lịch…" : "Chọn điểm du lịch…",
+              value: "",
+            },
+            ...destinationOptions,
+          ]}
+          disabled={isLoading || Boolean(destinationsError)}
           aria-invalid={Boolean(fieldErrors.destinationId)}
           className={cn(
             fieldErrors.destinationId &&
-              "border-red-400 focus:border-red-500 focus:ring-red-100",
+              "border-brand-danger focus:border-brand-danger focus:ring-brand-danger/10",
           )}
         />
       </FormField>
@@ -121,7 +128,7 @@ export function SubmitReviewForm() {
       <FormField id="review-content" label="Nội dung đánh giá" error={fieldErrors.content}>
         <Textarea
           id="review-content"
-          placeholder="Chia sẻ trải nghiệm của bạn tại địa điểm này..."
+          placeholder="Chia sẻ trải nghiệm của bạn tại địa điểm này…"
           value={content}
           onChange={(e) => {
             setContent(e.target.value);
@@ -129,14 +136,18 @@ export function SubmitReviewForm() {
           }}
           aria-invalid={Boolean(fieldErrors.content)}
           className={cn(
-            fieldErrors.content && "border-red-400 focus:border-red-500 focus:ring-red-100",
+            fieldErrors.content && "border-brand-danger focus:border-brand-danger focus:ring-brand-danger/10",
           )}
         />
-        <p className="text-xs text-slate-500">Tối thiểu 10 ký tự</p>
+        <p className="text-xs text-[#6a6a6a]">Tối thiểu 10 ký tự</p>
       </FormField>
 
-      <Button type="submit" className="w-full sm:w-auto" disabled={isSubmitting}>
-        {isSubmitting ? "Đang gửi..." : "Gửi đánh giá"}
+      <Button
+        type="submit"
+        className="w-full sm:w-auto"
+        disabled={isSubmitting || isLoading || Boolean(destinationsError)}
+      >
+        {isSubmitting ? "Đang gửi…" : "Gửi đánh giá"}
       </Button>
     </form>
   );

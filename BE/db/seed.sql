@@ -138,16 +138,26 @@ INSERT INTO service_facilities (
 
 -- ============================================================
 -- INSERT users
--- Password hash reused for demo accounts. Demo password depends on auth fixture.
+-- Demo password for every seeded account: Password123!
+-- The hash is generated at seed time via pgcrypto instead of being hard-coded.
 -- ============================================================
 
-INSERT INTO users (id, full_name, email, password_hash, role, avatar, birthday) VALUES
-('40000000-0000-0000-0000-000000000001', 'Nguyễn Minh Anh', 'minhanh@gis.local', '$2b$10$dyJOKedwOaRBxQ8/XlW6Eu8JTFlsiAYPWyokcvj4gO9m.fDphDKuy', 'user', NULL, '1998-04-12'),
-('40000000-0000-0000-0000-000000000002', 'Trần Hoàng Nam', 'hoangnam@gis.local', '$2b$10$dyJOKedwOaRBxQ8/XlW6Eu8JTFlsiAYPWyokcvj4gO9m.fDphDKuy', 'user', NULL, '1996-09-20'),
-('40000000-0000-0000-0000-000000000003', 'Lê Thu Hà', 'thuha@gis.local', '$2b$10$dyJOKedwOaRBxQ8/XlW6Eu8JTFlsiAYPWyokcvj4gO9m.fDphDKuy', 'user', NULL, '2000-02-08'),
-('40000000-0000-0000-0000-000000000004', 'Phạm Quốc Bảo', 'quocbao@gis.local', '$2b$10$dyJOKedwOaRBxQ8/XlW6Eu8JTFlsiAYPWyokcvj4gO9m.fDphDKuy', 'user', NULL, '1994-11-03'),
-('40000000-0000-0000-0000-000000000005', 'Đặng Mai Linh', 'mailinh@gis.local', '$2b$10$dyJOKedwOaRBxQ8/XlW6Eu8JTFlsiAYPWyokcvj4gO9m.fDphDKuy', 'user', NULL, '2001-06-15'),
-('40000000-0000-0000-0000-000000000006', 'Admin GIS Demo', 'admin@gis.local', '$2b$10$dyJOKedwOaRBxQ8/XlW6Eu8JTFlsiAYPWyokcvj4gO9m.fDphDKuy', 'admin', NULL, '1990-01-01');
+WITH seed_password AS (
+  SELECT crypt('Password123!', gen_salt('bf', 10)) AS password_hash
+),
+seed_users(id, full_name, email, role, avatar, birthday) AS (
+  VALUES
+  ('40000000-0000-0000-0000-000000000001'::uuid, 'Nguyễn Minh Anh', 'minhanh@gis.local', 'user', NULL::text, '1998-04-12'::date),
+  ('40000000-0000-0000-0000-000000000002'::uuid, 'Trần Hoàng Nam', 'hoangnam@gis.local', 'user', NULL::text, '1996-09-20'::date),
+  ('40000000-0000-0000-0000-000000000003'::uuid, 'Lê Thu Hà', 'thuha@gis.local', 'user', NULL::text, '2000-02-08'::date),
+  ('40000000-0000-0000-0000-000000000004'::uuid, 'Phạm Quốc Bảo', 'quocbao@gis.local', 'user', NULL::text, '1994-11-03'::date),
+  ('40000000-0000-0000-0000-000000000005'::uuid, 'Đặng Mai Linh', 'mailinh@gis.local', 'user', NULL::text, '2001-06-15'::date),
+  ('40000000-0000-0000-0000-000000000006'::uuid, 'Admin GIS Demo', 'admin@gis.local', 'admin', NULL::text, '1990-01-01'::date)
+)
+INSERT INTO users (id, full_name, email, password_hash, role, avatar, birthday)
+SELECT seed_users.id, seed_users.full_name, seed_users.email, seed_password.password_hash, seed_users.role, seed_users.avatar, seed_users.birthday
+FROM seed_users
+CROSS JOIN seed_password;
 
 -- ============================================================
 -- INSERT tour_plans and tour_plan_details

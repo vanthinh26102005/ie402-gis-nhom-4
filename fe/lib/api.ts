@@ -1,18 +1,35 @@
-export { API_BASE_URL, fetchApi } from "@/lib/api/client";
+export { API_BASE_URL, fetchApi, fetchApiEnvelope } from "@/lib/api/client";
 export type { ApiEnvelope, ApiResult } from "@/lib/api/envelope";
 export {
+  createAdminDestination,
+  createAdminTrafficObservation,
+  createAdminWeatherObservation,
+  deleteAdminTrafficObservation,
+  deleteAdminWeatherObservation,
+  getAdminDataCoverage,
   getAdminDashboardStats,
   getAdminCategories,
+  getAdminDestination,
   getAdminDestinationMix,
   getAdminDestinations,
+  getAdminProvinces,
+  getAdminReview,
   getAdminReviews,
   getAdminRouteDemand,
   getAdminServices,
+  getAdminTrafficObservations,
+  getAdminTrafficStats,
+  getAdminWeatherObservations,
+  getAdminWeatherStats,
   moderateAdminReview,
+  updateAdminTrafficObservation,
+  updateAdminDestination,
+  updateAdminWeatherObservation,
 } from "@/lib/api/admin";
 
 export {
   forgotPassword,
+  getCurrentUser,
   loginUser,
   logoutUser,
   registerUser,
@@ -42,7 +59,7 @@ export type {
   SubmittedReview,
   SubmitReviewPayload,
 } from "@/lib/api/reviews";
-export { createTour } from "@/lib/api/tours";
+export { createTour, deleteTour, fetchTour, fetchTours, updateTour } from "@/lib/api/tours";
 export type { CreatedTour, CreateTourPayload } from "@/lib/types/tour";
 export {
   getAllTraffic,

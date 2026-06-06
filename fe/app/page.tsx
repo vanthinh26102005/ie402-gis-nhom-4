@@ -1,220 +1,222 @@
 "use client";
 
 import Link from "next/link";
+import {
+  ArrowRight,
+  CalendarDays,
+  CloudSun,
+  Compass,
+  Map,
+  MapPin,
+  Navigation,
+  Search,
+  Star,
+} from "lucide-react";
 import { Button } from "@/components/common/Button";
 import { UserLayout } from "@/components/layout/UserLayout";
-import {
-  Map,
-  Compass,
-  Navigation,
-  CloudSun,
-  CalendarDays,
-  ArrowRight,
-  MapPin,
-  Sparkles,
-} from "lucide-react";
+
+const heroPhotos = [
+  {
+    title: "Kinh thành Huế",
+    meta: "Di sản · 4.8",
+    image: "https://images.unsplash.com/photo-1567272131881-8ce2275deb67?auto=format&fit=crop&w=900&q=85",
+  },
+  {
+    title: "Bà Nà Hills",
+    meta: "Núi & cáp treo · 4.5",
+    image: "https://images.unsplash.com/photo-1747137129095-b693a7ad08d0?auto=format&fit=crop&w=900&q=85",
+  },
+  {
+    title: "Mỹ Khê",
+    meta: "Biển đô thị · 4.7",
+    image: "https://images.unsplash.com/photo-1708776480405-7ae14fe1d4c4?auto=format&fit=crop&w=900&q=85",
+  },
+];
+
+const features = [
+  {
+    title: "Bản đồ GIS 2D",
+    desc: "Xem điểm du lịch, lớp dịch vụ và vị trí trên nền bản đồ tương tác.",
+    href: "/map",
+    icon: Map,
+  },
+  {
+    title: "Điểm du lịch",
+    desc: "Tra cứu hình ảnh, giá vé, đánh giá và tọa độ từ dữ liệu thật.",
+    href: "/destinations",
+    icon: Compass,
+  },
+  {
+    title: "Chỉ đường",
+    desc: "Tính tuyến đi, khoảng cách và thời gian giữa các điểm tham quan.",
+    href: "/route",
+    icon: Navigation,
+  },
+  {
+    title: "Thời tiết & giao thông",
+    desc: "Theo dõi điều kiện thực địa để quyết định thời điểm di chuyển.",
+    href: "/weather-traffic",
+    icon: CloudSun,
+  },
+  {
+    title: "Tạo tour",
+    desc: "Lưu hành trình cá nhân vào tài khoản với thứ tự điểm đến rõ ràng.",
+    href: "/tours/create",
+    icon: CalendarDays,
+  },
+];
+
+const provincesData = [
+  { name: "Đà Nẵng", count: "5 điểm đến", category: "Biển · Núi · Giải trí" },
+  { name: "Huế", count: "5 điểm đến", category: "Di sản · Lăng tẩm · Sông Hương" },
+  { name: "TP.HCM", count: "6 điểm đến", category: "Kiến trúc · Lịch sử · Đô thị" },
+  { name: "Hà Nội", count: "5 điểm đến", category: "Văn hóa · Hồ · Bảo tàng" },
+  { name: "Sơn Trà", count: "Tuyến gợi ý", category: "Sinh thái · Viewpoint" },
+  { name: "Trung tâm", count: "Tuyến đi bộ", category: "Dịch vụ gần điểm đến" },
+];
 
 export default function HomePage() {
-  const provincesData = [
-    {
-      name: "Quảng Trị",
-      count: "2 điểm đến",
-      desc: "Mảnh đất lịch sử với Thành Cổ uy nghiêm và Địa đạo Vịnh Mốc huyền thoại.",
-      tag: "Di tích lịch sử",
-      bgGradient: "from-amber-500/10 to-orange-500/5",
-      borderColor: "border-amber-500/20",
-      textColor: "text-amber-700",
-    },
-    {
-      name: "Thừa Thiên Huế",
-      count: "2 điểm đến",
-      desc: "Cố đô cổ kính thơ mộng sở hữu di sản văn hóa thế giới Đại Nội và Lăng Tự Đức.",
-      tag: "Di sản văn hóa",
-      bgGradient: "from-brand-primary/10 to-brand-primary-container/5",
-      borderColor: "border-brand-primary/20",
-      textColor: "text-brand-primary",
-    },
-    {
-      name: "Đà Nẵng",
-      count: "3 điểm đến",
-      desc: "Thành phố đáng sống với Cầu Vàng Bà Nà Hills trứ danh, Ngũ Hành Sơn và Sơn Trà.",
-      tag: "Hiện đại & Sinh thái",
-      bgGradient: "from-brand-secondary/10 to-cyan-500/5",
-      borderColor: "border-brand-secondary/20",
-      textColor: "text-brand-secondary",
-    },
-  ];
-
-  const features = [
-    {
-      title: "Bản đồ GIS 2D",
-      desc: "Khám phá không gian địa lý trực quan, hiển thị các điểm du lịch nổi bật và các dịch vụ hỗ trợ xung quanh.",
-      href: "/map",
-      icon: Map,
-      color: "bg-blue-500",
-      iconColor: "text-blue-500",
-    },
-    {
-      title: "Khám phá Điểm đến",
-      desc: "Tra cứu thông tin chi tiết, hình ảnh whitelisted sắc nét, video thuyết minh thực tế và tọa độ GPS chuẩn xác.",
-      href: "/destinations",
-      icon: Compass,
-      color: "bg-emerald-500",
-      iconColor: "text-emerald-500",
-    },
-    {
-      title: "Định tuyến & Chỉ đường",
-      desc: "Lập lộ trình di chuyển tối ưu nối liền các danh lam thắng cảnh, tính toán cự ly và ước lượng thời gian đi.",
-      href: "/route",
-      icon: Navigation,
-      color: "bg-orange-500",
-      iconColor: "text-orange-500",
-    },
-    {
-      title: "Thời tiết & Giao thông",
-      desc: "Theo dõi báo cáo nhiệt độ thực tế và các bản tin giao thông, cảnh báo cấm đường, ùn tắc trên các tuyến lộ.",
-      href: "/weather-traffic",
-      icon: CloudSun,
-      color: "bg-purple-500",
-      iconColor: "text-purple-500",
-    },
-    {
-      title: "Lập kế hoạch Tour",
-      desc: "Tự tạo hành trình tham quan cá nhân hóa theo thời gian và sở thích để có trải nghiệm du lịch trọn vẹn nhất.",
-      href: "/tours/create",
-      icon: CalendarDays,
-      color: "bg-pink-500",
-      iconColor: "text-pink-500",
-    },
-  ];
-
   return (
     <UserLayout>
-      <main className="min-h-screen bg-brand-background">
-        {/* Hero Section */}
-        <section className="relative overflow-hidden bg-gradient-to-br from-brand-primary via-slate-900 to-brand-primary-container text-white py-16 md:py-24 px-4">
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:32px_32px] opacity-15" />
-          <div className="absolute top-1/4 left-1/4 size-96 bg-brand-secondary/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/4 right-1/4 size-96 bg-emerald-500/10 rounded-full blur-3xl" />
-
-          <div className="max-w-5xl mx-auto text-center relative z-10 space-y-6">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-brand-secondary text-xs font-bold uppercase tracking-wider">
-              <Sparkles className="size-3 text-amber-400" /> Hệ thống thông tin địa lý du lịch miền trung
-            </div>
-            <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight md:leading-none">
-              Khám phá Di sản & <br />
-              <span className="bg-gradient-to-r from-brand-secondary to-teal-400 bg-clip-text text-transparent">
-                Định tuyến Thông minh
-              </span>
+      <section className="grid gap-8 pb-14 pt-4 lg:grid-cols-[minmax(0,0.9fr)_minmax(420px,1.1fr)] lg:items-center">
+        <div className="space-y-6">
+          <div className="inline-flex items-center rounded-full border border-brand-outline-variant px-4 py-2 text-sm font-medium text-[#6a6a6a]">
+            WebGIS du lịch 2D · dữ liệu PostGIS
+          </div>
+          <div className="space-y-4">
+            <h1 className="max-w-xl text-[28px] font-bold leading-[1.43] tracking-normal text-brand-secondary md:text-[32px]">
+              Cảm hứng cho những hành trình du lịch Việt Nam sắp tới
             </h1>
-            <p className="max-w-2xl mx-auto text-slate-300 text-xs md:text-sm font-medium leading-relaxed">
-              Trực quan hóa không gian địa lý các điểm du lịch tại Quảng Trị, Huế và Đà Nẵng. Theo dõi điều kiện thời tiết, giao thông thực tế và thiết lập hành trình tham quan tối ưu của riêng bạn.
+            <p className="max-w-2xl text-base leading-7 text-[#3f3f3f]">
+              Khám phá điểm đến, xem điều kiện thời tiết/giao thông và lưu tour cá nhân
+              trên một giao diện bản đồ nhẹ, rõ ràng, ưu tiên hình ảnh thật.
             </p>
-            <div className="pt-4 flex flex-wrap justify-center gap-4">
-              <Button asChild size="lg" className="rounded-xl shadow-lg shadow-brand-secondary/20 hover:scale-102 transition-transform font-bold text-sm">
-                <Link href="/map">
-                  Khám phá bản đồ chính <ArrowRight className="size-4 ml-1.5" />
-                </Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="rounded-xl border-white/25 hover:bg-white/10 hover:text-white font-bold text-sm">
-                <Link href="/destinations">Tìm điểm du lịch</Link>
-              </Button>
-            </div>
           </div>
-        </section>
 
-        {/* Feature Cards Grid Section */}
-        <section className="py-12 md:py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-10">
-            <h2 className="text-2xl md:text-3xl font-extrabold text-brand-primary tracking-tight">
-              Các tính năng hệ thống chính
+          <div className="flex min-h-16 max-w-2xl items-center rounded-full border border-brand-outline-variant bg-white p-2 shadow-[var(--shadow-brand-map)]">
+            <Link
+              href="/destinations"
+              className="min-w-0 flex-1 rounded-full px-5 py-2 transition-[background-color] hover:bg-brand-surface-low focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary/20"
+            >
+              <span className="block text-xs font-semibold text-brand-secondary">Bạn muốn đi đâu?</span>
+              <span className="block truncate text-sm text-[#6a6a6a]">
+                Tìm điểm du lịch, tỉnh thành hoặc loại hình…
+              </span>
+            </Link>
+            <div className="hidden h-8 w-px bg-brand-outline-variant sm:block" />
+            <Link
+              href="/route"
+              className="hidden min-w-0 flex-1 rounded-full px-5 py-2 transition-[background-color] hover:bg-brand-surface-low focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary/20 sm:block"
+            >
+              <span className="block text-xs font-semibold text-brand-secondary">Khi nào đi?</span>
+              <span className="block truncate text-sm text-[#6a6a6a]">Xem thời tiết và tuyến di chuyển</span>
+            </Link>
+            <Button asChild className="grid size-12 rounded-full p-0">
+              <Link href="/map" aria-label="Mở bản đồ">
+                <Search className="size-5" aria-hidden="true" />
+              </Link>
+            </Button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-3 gap-4">
+          {heroPhotos.map((photo, index) => (
+            <article
+              key={photo.title}
+              className="group min-w-0"
+              style={{ marginTop: index === 1 ? "40px" : index === 2 ? "16px" : 0 }}
+            >
+              <div
+                className="aspect-[4/5] overflow-hidden rounded-brand-card bg-brand-surface-container bg-cover bg-center"
+                style={{ backgroundImage: `url(${photo.image})` }}
+                aria-label={photo.title}
+                role="img"
+              />
+              <div className="mt-3 min-w-0 space-y-1">
+                <div className="flex items-center justify-between gap-2">
+                  <h2 className="truncate text-base font-semibold text-brand-secondary">
+                    {photo.title}
+                  </h2>
+                  <span className="inline-flex items-center gap-1 text-sm text-brand-secondary">
+                    <Star className="size-3.5 fill-brand-secondary text-brand-secondary" aria-hidden="true" />
+                    {photo.meta.split(" · ")[1]}
+                  </span>
+                </div>
+                <p className="truncate text-sm text-[#6a6a6a]">{photo.meta.split(" · ")[0]}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="border-t border-brand-outline-variant py-12">
+        <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 className="text-[22px] font-medium leading-tight tracking-normal text-brand-secondary">
+              Công cụ cho chuyến đi
             </h2>
-            <div className="mt-2 h-1 w-16 bg-brand-secondary rounded-full mx-auto" />
-            <p className="mt-3 text-slate-500 text-xs md:text-sm font-medium max-w-xl mx-auto">
-              Trải nghiệm bộ công cụ hỗ trợ du lịch 2D toàn diện, từ bản đồ số hóa đến dự báo thời tiết và lộ trình di chuyển.
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-[#6a6a6a]">
+              Ít màu trang trí, nhiều tín hiệu hữu ích: vị trí, tuyến đi, rủi ro di chuyển và dữ liệu vận hành.
             </p>
           </div>
+          <Button asChild variant="outline">
+            <Link href="/map">
+              Mở Bản Đồ
+              <ArrowRight className="ml-2 size-4" aria-hidden="true" />
+            </Link>
+          </Button>
+        </div>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-            {features.map((feat) => {
-              const IconComp = feat.icon;
-              return (
-                <Link
-                  key={feat.href}
-                  href={feat.href}
-                  className="group relative bg-brand-surface-lowest border border-brand-outline-variant/35 rounded-brand-card p-5 shadow-sm hover:shadow-lg hover:shadow-brand-primary/5 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
-                >
-                  <div className="space-y-4">
-                    <div className={`size-10 rounded-xl flex items-center justify-center bg-slate-50 border border-slate-100 group-hover:scale-110 transition-transform duration-300`}>
-                      <IconComp className={`size-5 ${feat.iconColor}`} />
-                    </div>
-                    <div className="space-y-1.5">
-                      <h3 className="text-sm font-bold text-slate-800 group-hover:text-brand-primary transition-colors">
-                        {feat.title}
-                      </h3>
-                      <p className="text-[11px] text-slate-500 font-medium leading-relaxed line-clamp-4">
-                        {feat.desc}
-                      </p>
-                    </div>
-                  </div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          {features.map((feature) => {
+            const Icon = feature.icon;
 
-                  <div className="mt-4 pt-3 border-t border-slate-100 flex items-center text-[10px] font-bold text-brand-primary group-hover:text-brand-primary-container transition-colors">
-                    Trải nghiệm ngay
-                    <ArrowRight className="size-3 ml-1 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* Region Highlights Section */}
-        <section className="py-12 bg-brand-surface-lowest border-t border-b border-brand-outline-variant/20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center md:text-left mb-10">
-              <h2 className="text-2xl font-extrabold text-brand-primary tracking-tight">
-                Địa bàn khám phá trọng điểm
-              </h2>
-              <div className="mt-1 h-1 w-16 bg-brand-secondary rounded-full md:mx-0 mx-auto" />
-              <p className="mt-3 text-slate-500 text-xs md:text-sm font-medium">
-                Dữ liệu không gian được số hóa đầy đủ trên địa bàn 3 tỉnh thành miền Trung liên kết hành trình.
-              </p>
-            </div>
-
-            <div className="grid gap-6 md:grid-cols-3">
-              {provincesData.map((prov) => (
-                <div
-                  key={prov.name}
-                  className={`bg-gradient-to-b ${prov.bgGradient} border ${prov.borderColor} rounded-brand-card p-6 flex flex-col justify-between min-h-[200px] hover:shadow-sm transition-all`}
-                >
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className={`px-2.5 py-0.5 text-[10px] font-bold rounded-full bg-white/80 border ${prov.borderColor} ${prov.textColor}`}>
-                        {prov.tag}
-                      </span>
-                      <span className="text-[11px] text-slate-400 font-bold flex items-center gap-1">
-                        <MapPin className="size-3.5" /> {prov.count}
-                      </span>
-                    </div>
-                    <h3 className="text-lg font-bold text-slate-800">{prov.name}</h3>
-                    <p className="text-xs text-slate-600 leading-relaxed font-medium">
-                      {prov.desc}
-                    </p>
-                  </div>
-
-                  <div className="mt-6">
-                    <Button asChild size="sm" variant="outline" className={`rounded-lg text-[11px] font-bold bg-white/70 hover:bg-white ${prov.textColor} border-current`}>
-                      <Link href={`/destinations?province=${prov.name}`}>
-                        Xem danh sách điểm đến
-                      </Link>
-                    </Button>
+            return (
+              <Link
+                key={feature.href}
+                href={feature.href}
+                className="group flex min-h-44 flex-col justify-between rounded-brand-card border border-brand-outline-variant bg-white p-5 transition-[box-shadow,border-color] hover:border-brand-secondary hover:shadow-[var(--shadow-brand-map)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary/20"
+              >
+                <div className="space-y-4">
+                  <span className="grid size-10 place-items-center rounded-full bg-brand-surface-low text-brand-secondary">
+                    <Icon className="size-5" aria-hidden="true" />
+                  </span>
+                  <div className="space-y-2">
+                    <h3 className="text-base font-semibold text-brand-secondary">{feature.title}</h3>
+                    <p className="line-clamp-3 text-sm leading-6 text-[#6a6a6a]">{feature.desc}</p>
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      </main>
+                <span className="mt-5 inline-flex items-center text-sm font-medium text-brand-primary">
+                  Xem ngay
+                  <ArrowRight className="ml-1 size-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="border-t border-brand-outline-variant py-12">
+        <h2 className="text-[22px] font-medium leading-tight tracking-normal text-brand-secondary">
+          Cảm hứng theo khu vực
+        </h2>
+        <div className="mt-8 grid gap-x-4 gap-y-6 sm:grid-cols-2 lg:grid-cols-6">
+          {provincesData.map((province) => (
+            <Link
+              key={province.name}
+              href={`/destinations?province=${province.name}`}
+              className="min-w-0 rounded-lg p-1 transition-[background-color] hover:bg-brand-surface-low focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary/20"
+            >
+              <span className="flex items-center gap-1 text-base font-semibold text-brand-secondary">
+                <MapPin className="size-4 text-brand-primary" aria-hidden="true" />
+                {province.name}
+              </span>
+              <span className="mt-1 block truncate text-sm text-[#6a6a6a]">{province.category}</span>
+              <span className="mt-1 block text-sm text-[#6a6a6a]">{province.count}</span>
+            </Link>
+          ))}
+        </div>
+      </section>
     </UserLayout>
   );
 }

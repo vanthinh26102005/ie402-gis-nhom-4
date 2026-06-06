@@ -46,12 +46,12 @@ export function DestinationFilterBar({
   };
 
   return (
-    <div className="bg-brand-surface-lowest border border-brand-outline-variant/30 rounded-brand-card p-6 shadow-sm mb-8 transition-all">
+    <div className="mb-8 rounded-brand-card border border-brand-outline-variant bg-brand-surface-lowest p-6 shadow-none transition-[border-color,box-shadow]">
       <form onSubmit={onSubmit} className="grid gap-4 md:grid-cols-[1fr_200px_180px_auto]">
         {/* Keyword input */}
         <div className="relative">
           <Input
-            placeholder="Nhập tên điểm đến, địa chỉ hoặc mô tả..."
+            placeholder="Nhập tên điểm đến, địa chỉ hoặc mô tả…"
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
             className="pl-10"

@@ -70,7 +70,7 @@ export function DestinationList() {
 
       {isLoading ? (
         <div className="rounded-lg border border-slate-200 bg-white p-5 text-sm text-slate-600">
-          Đang tải địa điểm...
+          Đang tải địa điểm…
         </div>
       ) : null}
 

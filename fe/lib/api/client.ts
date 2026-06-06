@@ -4,6 +4,11 @@ export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001/api";
 
 export async function fetchApi<T>(path: string, init?: RequestInit): Promise<T> {
+  const payload = await fetchApiEnvelope<T>(path, init);
+  return payload.data;
+}
+
+export async function fetchApiEnvelope<T>(path: string, init?: RequestInit): Promise<ApiEnvelope<T>> {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     credentials: "include",
     ...init,
@@ -18,5 +23,5 @@ export async function fetchApi<T>(path: string, init?: RequestInit): Promise<T> 
     throw new Error(payload.error?.message || payload.message || "Request failed");
   }
 
-  return payload.data;
+  return payload;
 }

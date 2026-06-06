@@ -11,6 +11,7 @@ DROP TABLE IF EXISTS traffic_info CASCADE;
 DROP TABLE IF EXISTS weather_info CASCADE;
 DROP TABLE IF EXISTS notifications CASCADE;
 DROP TABLE IF EXISTS reviews CASCADE;
+DROP TABLE IF EXISTS tour_plan_legs CASCADE;
 DROP TABLE IF EXISTS tour_plan_details CASCADE;
 DROP TABLE IF EXISTS tour_plans CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
@@ -111,8 +112,27 @@ CREATE TABLE tour_plans (
   estimated_duration_minutes integer CHECK (
     estimated_duration_minutes IS NULL OR estimated_duration_minutes >= 0
   ),
+  status varchar(20) NOT NULL DEFAULT 'draft',
+  start_date date,
+  end_date date,
+  party_size integer NOT NULL DEFAULT 1 CHECK (party_size > 0 AND party_size <= 100),
+  budget numeric(14,2) CHECK (budget IS NULL OR budget >= 0),
+  travel_mode varchar(30) NOT NULL DEFAULT 'car',
+  pace varchar(20) NOT NULL DEFAULT 'balanced',
   created_at timestamptz NOT NULL DEFAULT now(),
-  updated_at timestamptz NOT NULL DEFAULT now()
+  updated_at timestamptz NOT NULL DEFAULT now(),
+  CONSTRAINT tour_plans_status_check CHECK (
+    status IN ('draft', 'planned', 'active', 'completed', 'cancelled')
+  ),
+  CONSTRAINT tour_plans_travel_mode_check CHECK (
+    travel_mode IN ('car', 'motorbike', 'walk_transit')
+  ),
+  CONSTRAINT tour_plans_pace_check CHECK (
+    pace IN ('compact', 'balanced', 'relaxed')
+  ),
+  CONSTRAINT tour_plans_date_range_check CHECK (
+    start_date IS NULL OR end_date IS NULL OR end_date >= start_date
+  )
 );
 
 CREATE TABLE tour_plan_details (
@@ -120,10 +140,36 @@ CREATE TABLE tour_plan_details (
   tour_plan_id uuid NOT NULL REFERENCES tour_plans(id) ON DELETE CASCADE,
   destination_id uuid NOT NULL REFERENCES tourist_destinations(id) ON DELETE RESTRICT,
   visit_order integer NOT NULL CHECK (visit_order > 0),
+  day_number integer NOT NULL DEFAULT 1 CHECK (day_number > 0),
+  arrival_time time,
+  departure_time time,
+  stay_minutes integer NOT NULL DEFAULT 90 CHECK (stay_minutes >= 15),
+  estimated_cost numeric(12,2) NOT NULL DEFAULT 0 CHECK (estimated_cost >= 0),
   note text,
   created_at timestamptz NOT NULL DEFAULT now(),
   CONSTRAINT tour_plan_details_order_unique UNIQUE (tour_plan_id, visit_order),
   CONSTRAINT tour_plan_details_destination_unique UNIQUE (tour_plan_id, destination_id)
+);
+
+CREATE TABLE tour_plan_legs (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  tour_plan_id uuid NOT NULL REFERENCES tour_plans(id) ON DELETE CASCADE,
+  from_destination_id uuid NOT NULL REFERENCES tourist_destinations(id) ON DELETE RESTRICT,
+  to_destination_id uuid NOT NULL REFERENCES tourist_destinations(id) ON DELETE RESTRICT,
+  leg_order integer NOT NULL CHECK (leg_order > 0),
+  travel_mode varchar(30) NOT NULL DEFAULT 'car',
+  distance_km numeric(8,2) CHECK (distance_km IS NULL OR distance_km >= 0),
+  duration_minutes integer CHECK (duration_minutes IS NULL OR duration_minutes >= 0),
+  title varchar(150),
+  note text,
+  departure_time time,
+  route_geometry jsonb,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  CONSTRAINT tour_plan_legs_order_unique UNIQUE (tour_plan_id, leg_order),
+  CONSTRAINT tour_plan_legs_endpoints_check CHECK (from_destination_id <> to_destination_id),
+  CONSTRAINT tour_plan_legs_travel_mode_check CHECK (
+    travel_mode IN ('car', 'motorbike', 'walk_transit')
+  )
 );
 
 CREATE TABLE reviews (
@@ -184,6 +230,8 @@ CREATE INDEX traffic_info_location_geom_gix ON traffic_info USING gist (location
 CREATE INDEX tourist_destinations_province_idx ON tourist_destinations (province_id);
 CREATE INDEX tourist_destinations_category_idx ON tourist_destinations (category_id);
 CREATE INDEX service_facilities_province_type_idx ON service_facilities (province_id, type);
+CREATE INDEX tour_plans_user_status_idx ON tour_plans (user_id, status, updated_at DESC);
+CREATE INDEX tour_plan_legs_tour_idx ON tour_plan_legs (tour_plan_id, leg_order);
 CREATE INDEX users_reset_password_token_hash_idx ON users (reset_password_token_hash);
 CREATE INDEX reviews_destination_status_idx ON reviews (destination_id, status);
 CREATE INDEX notifications_destination_status_idx ON notifications (destination_id, status);

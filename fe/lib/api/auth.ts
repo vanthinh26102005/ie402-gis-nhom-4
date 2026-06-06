@@ -114,6 +114,23 @@ export async function logoutUser(): Promise<ApiResult<void>> {
   }
 }
 
+export async function getCurrentUser(): Promise<ApiResult<AuthUser>> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/users/me`, {
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      return { ok: false, message: await readErrorMessage(response, "Phiên đăng nhập không hợp lệ.") };
+    }
+
+    const data = await response.json();
+    return { ok: true, message: "Đã xác thực người dùng.", data: data.data };
+  } catch {
+    return { ok: false, message: "Không thể kiểm tra phiên đăng nhập." };
+  }
+}
+
 export async function forgotPassword(payload: { email: string }): Promise<ApiResult<void>> {
   try {
     const response = await fetch(`${API_BASE_URL}/auth/forgot-password`, {

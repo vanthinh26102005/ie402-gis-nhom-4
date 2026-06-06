@@ -32,7 +32,7 @@ type LoadingOverlayProps = {
   className?: string;
 };
 
-export function LoadingOverlay({ message = "Đang tải...", className }: LoadingOverlayProps) {
+export function LoadingOverlay({ message = "Đang tải…", className }: LoadingOverlayProps) {
   return (
     <div
       className={cn(

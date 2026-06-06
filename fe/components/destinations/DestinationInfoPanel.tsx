@@ -67,14 +67,14 @@ export function DestinationInfoPanel({ destination }: DestinationInfoPanelProps)
         <div className="flex flex-col gap-2.5 border-t border-brand-outline-variant/20 pt-4">
           <Link
             href={`/route?end=${destination.id}`}
-            className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-brand-primary px-4 py-2.5 text-xs font-bold text-white shadow-sm transition-all hover:bg-brand-primary-container"
+            className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-brand-primary px-4 py-2.5 text-xs font-medium text-white transition-[background-color] hover:bg-brand-primary-container"
           >
             <Navigation className="size-4 shrink-0" />
             <span>Chỉ đường đến đây</span>
           </Link>
           <Link
             href={`/weather-traffic?province=${destination.province.name}`}
-            className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-brand-primary/20 bg-brand-primary/5 px-4 py-2.5 text-xs font-bold text-brand-primary transition-all hover:bg-brand-primary/10"
+            className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-brand-outline-variant bg-white px-4 py-2.5 text-xs font-medium text-brand-secondary transition-[background-color,border-color] hover:border-brand-secondary hover:bg-brand-surface-low"
           >
             <CloudSun className="size-4 shrink-0" />
             <span>Xem thời tiết & giao thông</span>

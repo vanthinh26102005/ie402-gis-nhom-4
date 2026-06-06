@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { Search, Eye, MapPinned, MessageSquare } from "lucide-react";
+import { CheckCircle2, EyeOff, Search, Eye, MapPinned, MessageSquare } from "lucide-react";
 import { Input } from "@/components/common/Input";
 import { Select } from "@/components/common/Select";
 import { Card } from "@/components/common/Card";
 import { DataTable, Column, Action } from "@/components/admin/DataTable";
 import { StatusBadge, RatingBadge } from "@/components/admin/StatusBadge";
 import { EmptyState } from "@/components/admin/EmptyState";
-import { getAdminReviews, type AdminReview } from "@/lib/api/admin";
+import { getAdminReviews, moderateAdminReview, type AdminReview } from "@/lib/api/admin";
 
 const statusLabels = {
   approved: { label: "Đã duyệt", type: "success" as const },
@@ -22,13 +22,24 @@ export default function AdminReviewsPage() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
   const [reviews, setReviews] = useState<AdminReview[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  async function loadData() {
+    try {
+      setIsLoading(true);
+      setError(null);
+      setReviews(await getAdminReviews());
+    } catch (loadError) {
+      setError(loadError instanceof Error ? loadError.message : "Không thể tải đánh giá.");
+      setReviews([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   useEffect(() => {
-    getAdminReviews()
-      .then(setReviews)
-      .catch(() => setReviews([]))
-      .finally(() => setIsLoading(false));
+    loadData();
   }, []);
 
   const pendingCount = reviews.filter((r) => r.status === "pending").length;
@@ -108,6 +119,32 @@ export default function AdminReviewsPage() {
       icon: Eye,
       href: (row) => `/admin/reviews/${row.id}/moderate`,
     },
+    {
+      label: "Duyệt",
+      icon: CheckCircle2,
+      variant: "ghost",
+      onClick: async (row) => {
+        try {
+          await moderateAdminReview(row.id, "published");
+          await loadData();
+        } catch (moderateError) {
+          setError(moderateError instanceof Error ? moderateError.message : "Không thể duyệt đánh giá.");
+        }
+      },
+    },
+    {
+      label: "Ẩn",
+      icon: EyeOff,
+      variant: "destructive",
+      onClick: async (row) => {
+        try {
+          await moderateAdminReview(row.id, "hidden");
+          await loadData();
+        } catch (moderateError) {
+          setError(moderateError instanceof Error ? moderateError.message : "Không thể ẩn đánh giá.");
+        }
+      },
+    },
   ];
 
   return (
@@ -129,12 +166,18 @@ export default function AdminReviewsPage() {
         )}
       </div>
 
+      {error ? (
+        <Card className="border-brand-danger/25 bg-red-50 p-4 text-sm text-brand-danger">
+          {error}
+        </Card>
+      ) : null}
+
       <Card className="p-4">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div className="relative lg:col-span-2">
             <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" aria-hidden="true" />
             <Input
-              placeholder="Tìm kiếm đánh giá..."
+              placeholder="Tìm kiếm đánh giá…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-9"

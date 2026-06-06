@@ -5,4 +5,16 @@ export type Review = {
   content: string;
   score: number;
   created_at: string;
+  status?: "pending" | "published" | "hidden";
 };
+
+export type ReviewSummary = {
+  averageScore: number | null;
+  distribution: Array<{
+    score: number;
+    count: number;
+  }>;
+  totalReviews: number;
+};
+
+export type ReviewSort = "highest" | "latest" | "lowest" | "relevant";

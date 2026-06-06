@@ -2,9 +2,8 @@
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/common/Button";
-import { LoadingSpinner } from "./LoadingState";
 import type { LucideIcon } from "lucide-react";
-import { MoreHorizontal, Edit, Trash2, Eye, EyeOff, Check, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { MoreHorizontal, ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -80,14 +79,14 @@ export function DataTable<T>({
 
   if (loading) {
     return (
-      <div className={cn("rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden", className)}>
+      <div className={cn("overflow-hidden rounded-brand-card border border-brand-outline-variant bg-white", className)}>
         <div className="animate-pulse p-6 space-y-4">
           {Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="flex gap-4">
               {columns.map((col, j) => (
                 <div
                   key={j}
-                  className="h-4 animate-pulse rounded bg-slate-200"
+                  className="h-4 animate-pulse rounded bg-brand-surface-container"
                   style={{ width: col.width || "100px" }}
                 />
               ))}
@@ -100,32 +99,33 @@ export function DataTable<T>({
 
   if (data.length === 0) {
     return (
-      <div className={cn("rounded-xl border border-dashed border-slate-300 bg-slate-50/50 p-12 text-center", className)}>
-        <p className="text-sm text-slate-500">{emptyMessage}</p>
+      <div className={cn("rounded-brand-card border border-dashed border-brand-outline-variant bg-brand-surface-low p-12 text-center", className)}>
+        <p className="text-sm text-[#6a6a6a]">{emptyMessage}</p>
       </div>
     );
   }
 
   return (
-    <div className={cn("rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden", className)}>
+    <div className={cn("overflow-hidden rounded-brand-card border border-brand-outline-variant bg-white", className)}>
       <div className="overflow-x-auto">
         <table className="w-full text-left text-sm">
-          <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-600">
+          <thead className="bg-brand-surface-low text-xs uppercase tracking-wide text-[#6a6a6a]">
             <tr>
               {selectable && (
                 <th className="w-12 px-4 py-3">
                   <input
                     type="checkbox"
+                    aria-label="Chọn tất cả"
                     checked={selectedIds.length === data.length && data.length > 0}
                     onChange={handleSelectAll}
-                    className="size-4 rounded border-slate-300 text-primary focus:ring-primary"
+                    className="size-4 rounded border-brand-outline-variant text-primary focus:ring-brand-secondary/20"
                   />
                 </th>
               )}
               {columns.map((col) => (
                 <th
                   key={col.key}
-                  className={cn("px-4 py-3 font-semibold", col.sortable && "cursor-pointer hover:text-slate-900")}
+                  className={cn("px-4 py-3 font-semibold", col.sortable && "cursor-pointer hover:text-brand-secondary")}
                   style={{ width: col.width }}
                 >
                   {col.header}
@@ -134,7 +134,7 @@ export function DataTable<T>({
               {actions.length > 0 && <th className="w-16 px-4 py-3 text-right">Thao tác</th>}
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-brand-outline-variant">
             {data.map((row, index) => {
               const id = keyExtractor(row);
               const isSelected = selectedIds.includes(id);
@@ -143,7 +143,7 @@ export function DataTable<T>({
                 <tr
                   key={id}
                   className={cn(
-                    "transition-colors hover:bg-slate-50/50",
+                    "transition-colors hover:bg-brand-surface-low/70",
                     isSelected && "bg-primary/5"
                   )}
                 >
@@ -151,9 +151,10 @@ export function DataTable<T>({
                     <td className="px-4 py-3">
                       <input
                         type="checkbox"
+                        aria-label={`Chọn dòng ${index + 1}`}
                         checked={isSelected}
                         onChange={() => handleSelectRow(id)}
-                        className="size-4 rounded border-slate-300 text-primary focus:ring-primary"
+                        className="size-4 rounded border-brand-outline-variant text-primary focus:ring-brand-secondary/20"
                       />
                     </td>
                   )}
@@ -196,22 +197,34 @@ export function DataTable<T>({
                               <MoreHorizontal className="size-4" />
                             </Button>
                             {openActions === id && (
-                              <div className="absolute right-0 z-10 mt-1 w-40 rounded-lg border border-slate-200 bg-white py-1 shadow-lg">
+                              <div className="absolute right-0 z-10 mt-1 w-40 rounded-lg border border-brand-outline-variant bg-white py-1 shadow-[var(--shadow-brand-map)]">
                                 {actions.map((action, actionIndex) => {
                                   const Icon = action.icon;
-                                  return (
+                                  const itemClassName = cn(
+                                    "flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition-colors",
+                                    action.variant === "destructive"
+                                      ? "text-brand-danger hover:bg-brand-surface-low"
+                                      : "text-brand-secondary hover:bg-brand-surface-low"
+                                  );
+
+                                  return action.href ? (
+                                    <Link
+                                      key={actionIndex}
+                                      href={action.href(row)}
+                                      onClick={() => setOpenActions(null)}
+                                      className={itemClassName}
+                                    >
+                                      {Icon && <Icon className="size-4" aria-hidden="true" />}
+                                      {action.label}
+                                    </Link>
+                                  ) : (
                                     <button
                                       key={actionIndex}
                                       onClick={() => {
                                         action.onClick?.(row);
                                         setOpenActions(null);
                                       }}
-                                      className={cn(
-                                        "flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition-colors",
-                                        action.variant === "destructive"
-                                          ? "text-red-600 hover:bg-red-50"
-                                          : "text-slate-700 hover:bg-slate-50"
-                                      )}
+                                      className={itemClassName}
                                     >
                                       {Icon && <Icon className="size-4" aria-hidden="true" />}
                                       {action.label}
@@ -233,8 +246,8 @@ export function DataTable<T>({
       </div>
 
       {pagination && totalPages > 1 && (
-        <div className="flex items-center justify-between border-t border-slate-200 px-4 py-3">
-          <p className="text-sm text-slate-500">
+        <div className="flex items-center justify-between border-t border-brand-outline-variant px-4 py-3">
+          <p className="text-sm text-[#6a6a6a]">
             Hiển thị {(pagination.page - 1) * pagination.pageSize + 1} -{" "}
             {Math.min(pagination.page * pagination.pageSize, pagination.total)} của {pagination.total}
           </p>
@@ -248,7 +261,7 @@ export function DataTable<T>({
               <ChevronLeft className="size-4" aria-hidden="true" />
               Trước
             </Button>
-            <span className="text-sm text-slate-600">
+            <span className="text-sm text-[#6a6a6a]">
               Trang {pagination.page} / {totalPages}
             </span>
             <Button

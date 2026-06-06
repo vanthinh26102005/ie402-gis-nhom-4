@@ -12,9 +12,9 @@ function getWeatherIcon(status: WeatherInfo["weather_status"]) {
     case "Nhiều mây":
       return <Cloud className="size-10 text-slate-400" aria-hidden="true" />;
     case "Mưa rào":
-      return <CloudRain className="size-10 text-blue-400" aria-hidden="true" />;
+      return <CloudRain className="size-10 text-[#6a6a6a]" aria-hidden="true" />;
     case "Mưa bão":
-      return <CloudLightning className="size-10 text-purple-500" aria-hidden="true" />;
+      return <CloudLightning className="size-10 text-brand-danger" aria-hidden="true" />;
     case "Có sương mù":
       return <CloudFog className="size-10 text-zinc-400" aria-hidden="true" />;
     default:
@@ -24,7 +24,7 @@ function getWeatherIcon(status: WeatherInfo["weather_status"]) {
 
 export function WeatherCard({ weather }: { weather: WeatherInfo }) {
   return (
-    <article className="flex min-h-44 flex-col justify-between rounded-lg border border-slate-200 bg-white p-5 shadow-sm transition-colors hover:border-blue-200">
+    <article className="flex min-h-44 flex-col justify-between rounded-brand-card border border-brand-outline-variant bg-white p-5 transition-[border-color,box-shadow] hover:border-brand-secondary hover:shadow-[var(--shadow-brand-map)]">
       <div>
         <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
           {weather.province}
@@ -42,7 +42,7 @@ export function WeatherCard({ weather }: { weather: WeatherInfo }) {
       </div>
 
       <div className="border-t border-slate-100 pt-3">
-        <p className="text-sm font-semibold text-emerald-700">{weather.weather_status}</p>
+        <p className="text-sm font-semibold text-brand-secondary">{weather.weather_status}</p>
         <div className="mt-2 flex justify-between text-xs font-medium text-slate-500">
           <span className="flex items-center gap-1">
             <Droplets className="size-3.5" aria-hidden="true" />

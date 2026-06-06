@@ -1,6 +1,6 @@
 import { fetchApi } from "@/lib/api/client";
 import type { ApiResult } from "@/lib/api/envelope";
-import type { Review } from "@/lib/types/review";
+import type { Review, ReviewSort, ReviewSummary } from "@/lib/types/review";
 
 export type SubmitReviewPayload = {
   destinationId: string;
@@ -11,33 +11,55 @@ export type SubmitReviewPayload = {
 export type SubmittedReview = {
   id: string;
   destinationId: string;
-  rating: number;
+  score: number;
   content: string;
-  status: "pending" | "approved";
+  status: "pending" | "published" | "hidden";
 };
 
-export async function getReviewsWithLocal(destinationId: string): Promise<Review[]> {
-  try {
-    const reviews = await fetchApi<Array<{
-      id: string;
-      destinationId?: string;
-      destination_id?: string;
-      content: string;
-      score: number;
-      createdAt?: string;
-      created_at?: string;
-      userName?: string;
-      user_name?: string;
-    }>>(`/reviews?destinationId=${encodeURIComponent(destinationId)}`);
+function mapReviewPayload(
+  review: {
+    id: string;
+    destinationId?: string;
+    destination_id?: string;
+    content: string;
+    score: number;
+    createdAt?: string;
+    created_at?: string;
+    userName?: string;
+    user_name?: string;
+  },
+  destinationId: string,
+): Review {
+  return {
+    review_id: review.id,
+    user_name: review.userName || review.user_name || "Khách du lịch",
+    destination_id: review.destinationId || review.destination_id || destinationId,
+    content: review.content,
+    score: review.score,
+    created_at: review.createdAt || review.created_at || new Date().toISOString(),
+  };
+}
 
-    return reviews.map((review) => ({
-      review_id: review.id,
-      user_name: review.userName || review.user_name || "Khách du lịch",
-      destination_id: review.destinationId || review.destination_id || destinationId,
-      content: review.content,
-      score: review.score,
-      created_at: review.createdAt || review.created_at || new Date().toISOString(),
-    }));
+export async function getReviewSummary(destinationId: string): Promise<ReviewSummary> {
+  return fetchApi<ReviewSummary>(`/reviews/summary?destinationId=${encodeURIComponent(destinationId)}`);
+}
+
+export async function getReviewsWithLocal(
+  destinationId: string,
+  filters?: {
+    q?: string;
+    rating?: number | null;
+    sort?: ReviewSort;
+  },
+): Promise<Review[]> {
+  try {
+    const params = new URLSearchParams({ destinationId });
+    if (filters?.sort) params.set("sort", filters.sort);
+    if (filters?.rating) params.set("rating", String(filters.rating));
+    if (filters?.q?.trim()) params.set("q", filters.q.trim());
+    const reviews = await fetchApi<Array<Parameters<typeof mapReviewPayload>[0]>>(`/reviews?${params.toString()}`);
+
+    return reviews.map((review) => mapReviewPayload(review, destinationId));
   } catch {
     return [];
   }
@@ -57,26 +79,25 @@ export async function addReview(
 export async function submitReview(
   payload: SubmitReviewPayload,
 ): Promise<ApiResult<SubmittedReview>> {
-  await new Promise((resolve) => {
-    setTimeout(resolve, 600);
-  });
+  try {
+    const review = await fetchApi<SubmittedReview>("/reviews", {
+      method: "POST",
+      body: JSON.stringify({
+        content: payload.content.trim(),
+        destinationId: payload.destinationId,
+        score: payload.rating,
+      }),
+    });
 
-  if (payload.content.trim().toLowerCase().includes("spam")) {
+    return {
+      ok: true,
+      message: "Đã gửi đánh giá. Đang chờ kiểm duyệt.",
+      data: review,
+    };
+  } catch (error) {
     return {
       ok: false,
-      message: "Nội dung đánh giá không hợp lệ. Vui lòng chỉnh sửa và gửi lại.",
+      message: error instanceof Error ? error.message : "Không thể gửi đánh giá.",
     };
   }
-
-  return {
-    ok: true,
-    message: "Đã gửi đánh giá. Đang chờ kiểm duyệt.",
-    data: {
-      id: `review-${Date.now()}`,
-      destinationId: payload.destinationId,
-      rating: payload.rating,
-      content: payload.content.trim(),
-      status: "pending",
-    },
-  };
 }

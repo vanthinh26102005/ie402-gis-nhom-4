@@ -16,6 +16,7 @@ import {
 } from "@/lib/validations/auth";
 
 type LoginFormProps = {
+  defaultRedirect?: string;
   onSuccess?: () => void;
 };
 
@@ -24,7 +25,7 @@ const initialValues: LoginFormValues = {
   password: "",
 };
 
-export function LoginForm({ onSuccess }: LoginFormProps) {
+export function LoginForm({ defaultRedirect = "/", onSuccess }: LoginFormProps) {
   const { login } = useAuth();
   const router = useRouter();
   const [values, setValues] = useState(initialValues);
@@ -51,7 +52,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
       await login(values.email.trim(), values.password, rememberMe);
       setStatus({ variant: "success", message: "Đăng nhập thành công." });
       const redirectTo = new URLSearchParams(window.location.search).get("redirect");
-      const nextPath = redirectTo?.startsWith("/") && !redirectTo.startsWith("//") ? redirectTo : "/";
+      const nextPath = redirectTo?.startsWith("/") && !redirectTo.startsWith("//") ? redirectTo : defaultRedirect;
 
       setTimeout(() => {
         onSuccess?.();
@@ -105,7 +106,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
           aria-describedby={fieldErrors.email ? "login-email-error" : undefined}
           className={cn(
             fieldErrors.email &&
-              "border-red-400 focus:border-red-500 focus:ring-red-100",
+              "border-brand-danger focus:border-brand-danger focus:ring-brand-danger/10",
           )}
         />
       </FormField>
@@ -128,7 +129,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
           }
           className={cn(
             fieldErrors.password &&
-              "border-red-400 focus:border-red-500 focus:ring-red-100",
+              "border-brand-danger focus:border-brand-danger focus:ring-brand-danger/10",
           )}
         />
       </FormField>
@@ -139,15 +140,15 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
           type="checkbox"
           checked={rememberMe}
           onChange={(e) => setRememberMe(e.target.checked)}
-          className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+          className="h-4 w-4 rounded border-brand-outline-variant text-brand-primary focus:ring-brand-secondary/20"
         />
-        <label htmlFor="remember-me" className="ml-2 text-sm text-gray-700">
+        <label htmlFor="remember-me" className="ml-2 text-sm text-[#3f3f3f]">
           Ghi nhớ tôi
         </label>
       </div>
 
       <Button type="submit" className="w-full" disabled={isSubmitting}>
-        {isSubmitting ? "Đang đăng nhập..." : "Đăng nhập"}
+        {isSubmitting ? "Đang đăng nhập…" : "Đăng nhập"}
       </Button>
     </form>
   );

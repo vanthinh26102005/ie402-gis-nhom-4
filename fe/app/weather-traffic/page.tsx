@@ -13,8 +13,8 @@ export default function WeatherTrafficPage() {
         <UserLayout>
           <main className="flex min-h-screen items-center justify-center py-8">
             <div className="text-center text-sm font-semibold text-slate-500">
-              <RefreshCw className="mx-auto mb-2 size-8 animate-spin text-blue-700" />
-              Đang tải thông tin thời tiết và giao thông...
+              <RefreshCw className="mx-auto mb-2 size-8 animate-spin text-brand-primary" />
+              Đang tải thông tin thời tiết và giao thông…
             </div>
           </main>
         </UserLayout>

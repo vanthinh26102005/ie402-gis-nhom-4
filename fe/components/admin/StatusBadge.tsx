@@ -13,21 +13,21 @@ type StatusBadgeProps = {
 };
 
 const statusStyles: Record<StatusType, string> = {
-  success: "bg-emerald-50 text-emerald-800 border-emerald-200",
-  warning: "bg-amber-50 text-amber-800 border-amber-200",
-  error: "bg-red-50 text-red-800 border-red-200",
-  info: "bg-blue-50 text-blue-800 border-blue-200",
-  pending: "bg-slate-100 text-slate-600 border-slate-200",
-  default: "bg-slate-100 text-slate-700 border-slate-200",
+  success: "bg-brand-surface-low text-brand-secondary border-brand-outline-variant",
+  warning: "bg-brand-surface-low text-brand-danger border-brand-danger/25",
+  error: "bg-brand-surface-low text-brand-danger border-brand-danger/25",
+  info: "bg-brand-surface-low text-brand-secondary border-brand-outline-variant",
+  pending: "bg-brand-surface-low text-[#6a6a6a] border-brand-outline-variant",
+  default: "bg-brand-surface-low text-brand-secondary border-brand-outline-variant",
 };
 
 const statusDotStyles: Record<StatusType, string> = {
-  success: "bg-emerald-500",
-  warning: "bg-amber-500",
-  error: "bg-red-500",
-  info: "bg-blue-500",
-  pending: "bg-slate-400",
-  default: "bg-slate-400",
+  success: "bg-brand-secondary",
+  warning: "bg-brand-danger",
+  error: "bg-brand-danger",
+  info: "bg-brand-primary",
+  pending: "bg-[#6a6a6a]",
+  default: "bg-[#6a6a6a]",
 };
 
 export function StatusBadge({ status, label, icon: Icon, className }: StatusBadgeProps) {
@@ -48,16 +48,16 @@ export function StatusBadge({ status, label, icon: Icon, className }: StatusBadg
 
 export function RatingBadge({ score, max = 5 }: { score: number; max?: number }) {
   const percentage = (score / max) * 100;
-  let colorClass = "bg-slate-100 text-slate-600 border-slate-200";
+  let colorClass = "bg-brand-surface-low text-[#6a6a6a] border-brand-outline-variant";
 
   if (percentage >= 80) {
-    colorClass = "bg-emerald-50 text-emerald-800 border-emerald-200";
+    colorClass = "bg-brand-surface-low text-brand-secondary border-brand-outline-variant";
   } else if (percentage >= 60) {
-    colorClass = "bg-blue-50 text-blue-800 border-blue-200";
+    colorClass = "bg-brand-surface-low text-brand-secondary border-brand-outline-variant";
   } else if (percentage >= 40) {
-    colorClass = "bg-amber-50 text-amber-800 border-amber-200";
+    colorClass = "bg-brand-surface-low text-brand-danger border-brand-danger/25";
   } else {
-    colorClass = "bg-red-50 text-red-800 border-red-200";
+    colorClass = "bg-brand-surface-low text-brand-danger border-brand-danger/25";
   }
 
   return (
@@ -75,7 +75,7 @@ export function RatingBadge({ score, max = 5 }: { score: number; max?: number })
 export function CategoryBadge({ label, color }: { label: string; color?: string }) {
   return (
     <span
-      className="inline-flex items-center rounded-full bg-teal-50 px-2.5 py-1 text-xs font-medium text-teal-800 border border-teal-200"
+      className="inline-flex items-center rounded-full border border-brand-outline-variant bg-brand-surface-low px-2.5 py-1 text-xs font-medium text-brand-secondary"
       style={color ? { backgroundColor: `${color}15`, color, borderColor: `${color}30` } : undefined}
     >
       {label}

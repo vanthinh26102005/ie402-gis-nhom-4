@@ -149,6 +149,49 @@ Minimum seed contents:
 - 3 weather records
 - 3 traffic records
 
+## Apply Rich Seed Data
+
+For a fuller demo dataset with admin accounts, user accounts, tour plans, reviews, services, notifications, and temporal weather/traffic records:
+
+```bash
+npm run db:seed:rich
+```
+
+This runs:
+
+```bash
+node db/scripts/run-sql.js db/seed.rich.sql
+```
+
+Rich seed contents:
+
+- 4 central Vietnam provinces: Quang Tri, Thua Thien Hue, Da Nang, Quang Nam
+- 8 destination categories
+- 16 tourist destinations
+- 20 service facilities across hotel, restaurant, parking, medical, and gas station types
+- 10 users, including 2 admin accounts and 8 normal user accounts
+- 5 tour plans with ordered itinerary details
+- 10 reviews with published and pending moderation states
+- 5 notifications covering warning, news, maintenance, and event cases
+- 48 weather observations across morning, noon, and afternoon time slots
+- 48 traffic observations across morning, noon, and afternoon time slots
+
+Seeded account credentials:
+
+```text
+Admin: admin@gis-tour.local / Password123!
+Operator: operator@gis-tour.local / Password123!
+User: minh.nguyen@example.com / Password123!
+```
+
+Destination images in `seed.rich.sql` use fixed `images.unsplash.com` or `plus.unsplash.com` assets linked from checked Unsplash pages/search results. The rich seed intentionally avoids `source.unsplash.com` because it can return random, undefined, or geographically wrong images.
+
+For a full rich reset:
+
+```bash
+npm run db:reset:rich
+```
+
 ## Reset Database
 
 For normal development reset:

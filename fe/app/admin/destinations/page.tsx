@@ -91,7 +91,7 @@ export default function AdminDestinationsPage() {
       key: "status",
       header: "Trạng thái",
       width: "110px",
-      render: (row) => {
+      render: () => {
         return <StatusBadge status="success" label="Hoạt động" />;
       },
     },
@@ -129,7 +129,7 @@ export default function AdminDestinationsPage() {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" aria-hidden="true" />
             <Input
-              placeholder="Tìm kiếm điểm du lịch..."
+              placeholder="Tìm kiếm điểm du lịch…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-9"

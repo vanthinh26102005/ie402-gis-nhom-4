@@ -7,16 +7,17 @@ export default function ReviewsPage() {
     <UserLayout>
       <div className="mx-auto w-full max-w-xl space-y-6">
         <div className="space-y-2">
-          <h1 className="text-3xl font-semibold tracking-tight text-slate-950">
+          <p className="text-sm font-medium text-[#6a6a6a]">Cộng đồng</p>
+          <h1 className="text-[28px] font-bold leading-[1.43] tracking-normal text-brand-secondary">
             Đánh giá địa điểm
           </h1>
-          <p className="text-sm leading-6 text-slate-600">
+          <p className="text-base leading-7 text-[#3f3f3f]">
             Chọn địa điểm, chấm điểm và gửi phản hồi sau khi trải nghiệm. Đánh
             giá sẽ được kiểm duyệt trước khi hiển thị công khai.
           </p>
         </div>
 
-        <Card className="border-blue-100 bg-gradient-to-br from-white to-blue-50/50">
+        <Card>
           <SubmitReviewForm />
         </Card>
       </div>

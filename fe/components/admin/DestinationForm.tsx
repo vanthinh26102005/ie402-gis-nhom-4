@@ -1,106 +1,135 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
+import type { ReactNode } from "react";
+import { useMemo } from "react";
+import { useForm } from "react-hook-form";
 import { ArrowLeft, Save } from "lucide-react";
 import { Button } from "@/components/common/Button";
+import { Card } from "@/components/common/Card";
 import { Input } from "@/components/common/Input";
 import { Select } from "@/components/common/Select";
-import { Card } from "@/components/common/Card";
-import { REGION_PROVINCES } from "@/lib/constants";
-import { mockCategories } from "@/lib/admin-data";
+import { Textarea } from "@/components/common/Textarea";
+import type {
+  AdminCategory,
+  AdminDestination,
+  AdminDestinationPayload,
+  AdminProvince,
+} from "@/lib/api/admin";
+import { cn } from "@/lib/utils";
 
-type DestinationFormData = {
-  name: string;
-  province: string;
-  category: string;
+type DestinationFormValues = {
   address: string;
+  categoryId: string;
+  closeTime: string;
+  description: string;
   latitude: string;
   longitude: string;
-  ticket_price: string;
-  open_time: string;
-  close_time: string;
-  description: string;
+  name: string;
+  openTime: string;
+  provinceId: string;
+  rating: string;
+  ticketPrice: string;
 };
 
 type DestinationFormProps = {
-  initialData?: Partial<DestinationFormData>;
+  categories: AdminCategory[];
+  initialData?: AdminDestination | null;
   isEditing?: boolean;
+  isSubmitting?: boolean;
+  onSubmit: (payload: AdminDestinationPayload) => Promise<void>;
+  provinces: AdminProvince[];
+  submitError?: string | null;
 };
 
-export function DestinationForm({ initialData, isEditing = false }: DestinationFormProps) {
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState<DestinationFormData>({
-    name: initialData?.name || "",
-    province: initialData?.province || "",
-    category: initialData?.category || "",
+function normalizeTime(value?: string | null) {
+  return value ? String(value).slice(0, 5) : "";
+}
+
+function buildDefaultValues(initialData?: AdminDestination | null): DestinationFormValues {
+  return {
     address: initialData?.address || "",
-    latitude: initialData?.latitude || "",
-    longitude: initialData?.longitude || "",
-    ticket_price: initialData?.ticket_price || "",
-    open_time: initialData?.open_time || "07:00",
-    close_time: initialData?.close_time || "18:00",
+    categoryId: initialData?.categoryId || "",
+    closeTime: normalizeTime(initialData?.closeTime) || "18:00",
     description: initialData?.description || "",
+    latitude: initialData?.location?.lat?.toString() || "",
+    longitude: initialData?.location?.lng?.toString() || "",
+    name: initialData?.name || "",
+    openTime: normalizeTime(initialData?.openTime) || "07:00",
+    provinceId: initialData?.provinceId || "",
+    rating: initialData?.rating?.toString() || "0",
+    ticketPrice: initialData?.ticketPrice?.toString() || "0",
+  };
+}
+
+function toPayload(values: DestinationFormValues): AdminDestinationPayload {
+  return {
+    address: values.address.trim(),
+    categoryId: values.categoryId,
+    closeTime: values.closeTime || null,
+    description: values.description.trim() || null,
+    location: {
+      lat: Number(values.latitude),
+      lng: Number(values.longitude),
+    },
+    name: values.name.trim(),
+    openTime: values.openTime || null,
+    provinceId: values.provinceId,
+    rating: Number(values.rating),
+    ticketPrice: Number(values.ticketPrice),
+  };
+}
+
+function isFiniteStringNumber(value: string) {
+  return value.trim() !== "" && Number.isFinite(Number(value));
+}
+
+export function DestinationForm({
+  categories,
+  initialData = null,
+  isEditing = false,
+  isSubmitting = false,
+  onSubmit,
+  provinces,
+  submitError = null,
+}: DestinationFormProps) {
+  const {
+    formState: { errors, isSubmitting: isFormSubmitting },
+    getValues,
+    handleSubmit,
+    register,
+  } = useForm<DestinationFormValues>({
+    defaultValues: buildDefaultValues(initialData),
+    mode: "onBlur",
   });
 
-  const [errors, setErrors] = useState<Partial<Record<keyof DestinationFormData, string>>>({});
+  const provinceOptions = useMemo(
+    () => [
+      { label: "Chọn tỉnh/thành", value: "" },
+      ...provinces.map((province) => ({
+        label: province.name,
+        value: province.id,
+      })),
+    ],
+    [provinces],
+  );
 
-  const handleChange = (field: keyof DestinationFormData, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-    if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: undefined }));
-    }
-  };
+  const categoryOptions = useMemo(
+    () => [
+      { label: "Chọn loại hình", value: "" },
+      ...categories.map((category) => ({
+        label: category.name,
+        value: category.id,
+      })),
+    ],
+    [categories],
+  );
 
-  const validate = (): boolean => {
-    const newErrors: Partial<Record<keyof DestinationFormData, string>> = {};
-
-    if (!formData.name.trim()) {
-      newErrors.name = "Tên điểm du lịch là bắt buộc";
-    }
-    if (!formData.province) {
-      newErrors.province = "Vui lòng chọn tỉnh/thành";
-    }
-    if (!formData.category) {
-      newErrors.category = "Vui lòng chọn loại hình";
-    }
-    if (!formData.address.trim()) {
-      newErrors.address = "Địa chỉ là bắt buộc";
-    }
-    if (!formData.ticket_price || isNaN(Number(formData.ticket_price))) {
-      newErrors.ticket_price = "Giá vé phải là số";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!validate()) {
-      return;
-    }
-
-    setLoading(true);
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    setLoading(false);
-    router.push("/admin/destinations");
-  };
-
-  const categoryOptions = mockCategories.map((c) => ({
-    label: c.name,
-    value: c.name,
-  }));
+  const submitDisabled = isSubmitting || isFormSubmitting;
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <Button variant="ghost" size="sm" asChild>
           <Link href="/admin/destinations">
             <ArrowLeft className="mr-2 size-4" aria-hidden="true" />
@@ -113,159 +142,187 @@ export function DestinationForm({ initialData, isEditing = false }: DestinationF
           </h1>
           <p className="mt-1 text-sm text-slate-600">
             {isEditing
-              ? "Cập nhật thông tin điểm du lịch trong hệ thống."
-              : "Tạo mới một điểm du lịch trong hệ thống."}
+              ? "Cập nhật dữ liệu điểm du lịch đang lưu trong PostgreSQL/PostGIS."
+              : "Tạo mới một điểm du lịch và tọa độ bản đồ trong hệ thống."}
           </p>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <Card className="p-6">
+      {submitError ? (
+        <div role="alert" className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+          {submitError}
+        </div>
+      ) : null}
+
+      <form onSubmit={handleSubmit((values) => onSubmit(toPayload(values)))} className="space-y-6" noValidate>
+        <Card className="rounded-lg p-6">
           <h2 className="mb-4 text-base font-semibold text-slate-950">Thông tin cơ bản</h2>
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="sm:col-span-2">
-              <label htmlFor="name" className="mb-1.5 block text-sm font-medium text-slate-700">
-                Tên điểm du lịch <span className="text-red-500">*</span>
-              </label>
+            <Field label="Tên điểm du lịch" error={errors.name?.message} required>
               <Input
-                id="name"
+                {...register("name", {
+                  required: "Tên điểm du lịch là bắt buộc.",
+                  setValueAs: (value) => String(value || "").trimStart(),
+                  minLength: { value: 2, message: "Tên điểm du lịch phải có ít nhất 2 ký tự." },
+                  maxLength: { value: 150, message: "Tên điểm du lịch tối đa 150 ký tự." },
+                })}
                 placeholder="Nhập tên điểm du lịch"
-                value={formData.name}
-                onChange={(e) => handleChange("name", e.target.value)}
-                className={errors.name ? "border-red-500 focus:border-red-500 focus:ring-red-100" : ""}
+                aria-invalid={Boolean(errors.name)}
+                className={inputErrorClass(errors.name?.message)}
               />
-              {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name}</p>}
-            </div>
+            </Field>
 
-            <div>
-              <label htmlFor="province" className="mb-1.5 block text-sm font-medium text-slate-700">
-                Tỉnh/Thành <span className="text-red-500">*</span>
-              </label>
+            <Field label="Tỉnh/Thành" error={errors.provinceId?.message} required>
               <Select
-                id="province"
-                value={formData.province}
-                onChange={(e) => handleChange("province", e.target.value)}
-                options={[{ label: "Chọn tỉnh/thành", value: "" }, ...REGION_PROVINCES.map((p) => ({ label: p, value: p }))]}
-                className={errors.province ? "border-red-500 focus:border-red-500" : ""}
+                {...register("provinceId", {
+                  required: "Vui lòng chọn tỉnh/thành.",
+                })}
+                options={provinceOptions}
+                aria-invalid={Boolean(errors.provinceId)}
+                className={inputErrorClass(errors.provinceId?.message)}
               />
-              {errors.province && <p className="mt-1 text-xs text-red-500">{errors.province}</p>}
-            </div>
+            </Field>
 
-            <div>
-              <label htmlFor="category" className="mb-1.5 block text-sm font-medium text-slate-700">
-                Loại hình du lịch <span className="text-red-500">*</span>
-              </label>
+            <Field label="Loại hình du lịch" error={errors.categoryId?.message} required>
               <Select
-                id="category"
-                value={formData.category}
-                onChange={(e) => handleChange("category", e.target.value)}
-                options={[{ label: "Chọn loại hình", value: "" }, ...categoryOptions]}
-                className={errors.category ? "border-red-500 focus:border-red-500" : ""}
+                {...register("categoryId", {
+                  required: "Vui lòng chọn loại hình.",
+                })}
+                options={categoryOptions}
+                aria-invalid={Boolean(errors.categoryId)}
+                className={inputErrorClass(errors.categoryId?.message)}
               />
-              {errors.category && <p className="mt-1 text-xs text-red-500">{errors.category}</p>}
-            </div>
+            </Field>
 
-            <div className="sm:col-span-2">
-              <label htmlFor="address" className="mb-1.5 block text-sm font-medium text-slate-700">
-                Địa chỉ <span className="text-red-500">*</span>
-              </label>
+            <Field className="sm:col-span-2" label="Địa chỉ" error={errors.address?.message} required>
               <Input
-                id="address"
+                {...register("address", {
+                  required: "Địa chỉ là bắt buộc.",
+                  setValueAs: (value) => String(value || "").trimStart(),
+                  maxLength: { value: 300, message: "Địa chỉ tối đa 300 ký tự." },
+                })}
                 placeholder="Nhập địa chỉ đầy đủ"
-                value={formData.address}
-                onChange={(e) => handleChange("address", e.target.value)}
-                className={errors.address ? "border-red-500 focus:border-red-500 focus:ring-red-100" : ""}
+                aria-invalid={Boolean(errors.address)}
+                className={inputErrorClass(errors.address?.message)}
               />
-              {errors.address && <p className="mt-1 text-xs text-red-500">{errors.address}</p>}
-            </div>
+            </Field>
 
-            <div className="sm:col-span-2">
-              <label htmlFor="description" className="mb-1.5 block text-sm font-medium text-slate-700">
-                Mô tả
-              </label>
-              <textarea
-                id="description"
+            <Field className="sm:col-span-2" label="Mô tả" error={errors.description?.message}>
+              <Textarea
+                {...register("description", {
+                  maxLength: { value: 1000, message: "Mô tả tối đa 1000 ký tự." },
+                })}
                 placeholder="Nhập mô tả ngắn về điểm du lịch"
-                value={formData.description}
-                onChange={(e) => handleChange("description", e.target.value)}
-                rows={3}
-                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+                rows={4}
+                aria-invalid={Boolean(errors.description)}
+                className={inputErrorClass(errors.description?.message)}
               />
-            </div>
+            </Field>
           </div>
         </Card>
 
-        <Card className="p-6">
-          <h2 className="mb-4 text-base font-semibold text-slate-950">Thông tin bổ sung</h2>
+        <Card className="rounded-lg p-6">
+          <h2 className="mb-4 text-base font-semibold text-slate-950">Thông tin vận hành</h2>
           <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <label htmlFor="ticket_price" className="mb-1.5 block text-sm font-medium text-slate-700">
-                Giá vé (VNĐ) <span className="text-red-500">*</span>
-              </label>
+            <Field label="Giá vé (VNĐ)" error={errors.ticketPrice?.message} required>
               <Input
-                id="ticket_price"
+                {...register("ticketPrice", {
+                  required: "Giá vé là bắt buộc.",
+                  validate: (value) => {
+                    const parsed = Number(value);
+                    if (!isFiniteStringNumber(value)) return "Giá vé phải là số.";
+                    if (parsed < 0) return "Giá vé phải là số không âm.";
+                    return true;
+                  },
+                })}
                 type="number"
+                min={0}
                 placeholder="0 = Miễn phí"
-                value={formData.ticket_price}
-                onChange={(e) => handleChange("ticket_price", e.target.value)}
-                className={errors.ticket_price ? "border-red-500 focus:border-red-500 focus:ring-red-100" : ""}
+                aria-invalid={Boolean(errors.ticketPrice)}
+                className={inputErrorClass(errors.ticketPrice?.message)}
               />
-              {errors.ticket_price && <p className="mt-1 text-xs text-red-500">{errors.ticket_price}</p>}
-            </div>
+            </Field>
 
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <label htmlFor="open_time" className="mb-1.5 block text-sm font-medium text-slate-700">
-                  Giờ mở cửa
-                </label>
-                <Input
-                  id="open_time"
-                  type="time"
-                  value={formData.open_time}
-                  onChange={(e) => handleChange("open_time", e.target.value)}
-                />
-              </div>
-              <div>
-                <label htmlFor="close_time" className="mb-1.5 block text-sm font-medium text-slate-700">
-                  Giờ đóng cửa
-                </label>
-                <Input
-                  id="close_time"
-                  type="time"
-                  value={formData.close_time}
-                  onChange={(e) => handleChange("close_time", e.target.value)}
-                />
-              </div>
-            </div>
+            <Field label="Đánh giá mặc định" error={errors.rating?.message}>
+              <Input
+                {...register("rating", {
+                  validate: (value) => {
+                    const parsed = Number(value);
+                    if (!isFiniteStringNumber(value)) return "Đánh giá phải là số.";
+                    if (parsed < 0 || parsed > 5) return "Đánh giá phải nằm trong khoảng 0 đến 5.";
+                    return true;
+                  },
+                })}
+                type="number"
+                min={0}
+                max={5}
+                step="0.1"
+                aria-invalid={Boolean(errors.rating)}
+                className={inputErrorClass(errors.rating?.message)}
+              />
+            </Field>
 
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <label htmlFor="latitude" className="mb-1.5 block text-sm font-medium text-slate-700">
-                  Vĩ độ (Latitude)
-                </label>
-                <Input
-                  id="latitude"
-                  type="number"
-                  step="any"
-                  placeholder="16.0544"
-                  value={formData.latitude}
-                  onChange={(e) => handleChange("latitude", e.target.value)}
-                />
-              </div>
-              <div>
-                <label htmlFor="longitude" className="mb-1.5 block text-sm font-medium text-slate-700">
-                  Kinh độ (Longitude)
-                </label>
-                <Input
-                  id="longitude"
-                  type="number"
-                  step="any"
-                  placeholder="108.2139"
-                  value={formData.longitude}
-                  onChange={(e) => handleChange("longitude", e.target.value)}
-                />
-              </div>
-            </div>
+            <Field label="Giờ mở cửa" error={errors.openTime?.message}>
+              <Input
+                {...register("openTime")}
+                type="time"
+                aria-invalid={Boolean(errors.openTime)}
+                className={inputErrorClass(errors.openTime?.message)}
+              />
+            </Field>
+
+            <Field label="Giờ đóng cửa" error={errors.closeTime?.message}>
+              <Input
+                {...register("closeTime", {
+                  validate: (value) => {
+                    const openTime = getValues("openTime");
+                    if (!openTime || !value) return true;
+                    return value > openTime || "Giờ đóng cửa phải sau giờ mở cửa.";
+                  },
+                })}
+                type="time"
+                aria-invalid={Boolean(errors.closeTime)}
+                className={inputErrorClass(errors.closeTime?.message)}
+              />
+            </Field>
+
+            <Field label="Vĩ độ (Latitude)" error={errors.latitude?.message} required>
+              <Input
+                {...register("latitude", {
+                  required: "Vĩ độ là bắt buộc.",
+                  validate: (value) => {
+                    const parsed = Number(value);
+                    if (!isFiniteStringNumber(value)) return "Vĩ độ phải là số.";
+                    if (parsed < -90 || parsed > 90) return "Vĩ độ phải nằm trong khoảng -90 đến 90.";
+                    return true;
+                  },
+                })}
+                type="number"
+                step="any"
+                placeholder="16.0544"
+                aria-invalid={Boolean(errors.latitude)}
+                className={inputErrorClass(errors.latitude?.message)}
+              />
+            </Field>
+
+            <Field label="Kinh độ (Longitude)" error={errors.longitude?.message} required>
+              <Input
+                {...register("longitude", {
+                  required: "Kinh độ là bắt buộc.",
+                  validate: (value) => {
+                    const parsed = Number(value);
+                    if (!isFiniteStringNumber(value)) return "Kinh độ phải là số.";
+                    if (parsed < -180 || parsed > 180) return "Kinh độ phải nằm trong khoảng -180 đến 180.";
+                    return true;
+                  },
+                })}
+                type="number"
+                step="any"
+                placeholder="108.2139"
+                aria-invalid={Boolean(errors.longitude)}
+                className={inputErrorClass(errors.longitude?.message)}
+              />
+            </Field>
           </div>
         </Card>
 
@@ -273,9 +330,9 @@ export function DestinationForm({ initialData, isEditing = false }: DestinationF
           <Button variant="outline" asChild>
             <Link href="/admin/destinations">Hủy</Link>
           </Button>
-          <Button type="submit" disabled={loading}>
-            {loading ? (
-              "Đang lưu..."
+          <Button type="submit" disabled={submitDisabled}>
+            {submitDisabled ? (
+              "Đang lưu…"
             ) : (
               <>
                 <Save className="mr-2 size-4" aria-hidden="true" />
@@ -287,4 +344,36 @@ export function DestinationForm({ initialData, isEditing = false }: DestinationF
       </form>
     </div>
   );
+}
+
+function Field({
+  children,
+  className,
+  error,
+  label,
+  required = false,
+}: {
+  children: ReactNode;
+  className?: string;
+  error?: string;
+  label: string;
+  required?: boolean;
+}) {
+  return (
+    <label className={cn("block", className)}>
+      <span className="mb-1.5 block text-sm font-medium text-slate-700">
+        {label} {required ? <span className="text-red-500">*</span> : null}
+      </span>
+      {children}
+      {error ? (
+        <p role="alert" className="mt-1 text-xs text-red-600">
+          {error}
+        </p>
+      ) : null}
+    </label>
+  );
+}
+
+function inputErrorClass(error?: string) {
+  return error ? "border-brand-danger focus:border-brand-danger focus:ring-brand-danger/10" : "";
 }

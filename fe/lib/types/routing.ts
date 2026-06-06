@@ -8,3 +8,14 @@ export type RouteResult = {
   waypoints: Array<Coordinate & { label: string }>;
   source: "osrm";
 };
+
+export type RouteAlternativeKind = "fastest" | "low_risk" | "scenic";
+
+export type RouteAlternative = {
+  id: RouteAlternativeKind;
+  description: string;
+  kind: RouteAlternativeKind;
+  label: string;
+  route: RouteResult;
+  waypointIds: string[];
+};
